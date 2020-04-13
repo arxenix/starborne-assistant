@@ -1,30 +1,29 @@
 import * as React from "react";
-import {Appbar, Avatar, IconButton, Text} from "react-native-paper";
-import { TouchableOpacity } from "react-native";
-import {StackHeaderProps} from "@react-navigation/stack";
+import {Appbar} from "react-native-paper";
+import {DrawerNavigationProp} from "@react-navigation/drawer";
 
+interface Props {
+    navigation: DrawerNavigationProp<any>;
+    title: string;
+}
 
-export const Header = ({ scene, previous, navigation }: StackHeaderProps) => {
-    const { options } = scene.descriptor;
-    const title =
-        options.headerTitle !== undefined
-            ? options.headerTitle
-            : options.title !== undefined
-            ? options.title
-            : scene.route.name;
-
+export const Header = (props: Props) => {
     return (
         <Appbar.Header>
-            {previous &&
-            <Appbar.BackAction
-                onPress={() => navigation.pop()}
-            />}
+            <Appbar.Action
+                icon="menu"
+                onPress={/* TODO - proper logout... */ () =>
+                    props.navigation.openDrawer()
+                }
+            />
             <Appbar.Content
-                title={title}
+                title={props.title}
             />
             <Appbar.Action
                 icon="logout"
-                onPress={/* TODO - proper logout... */ () => navigation.navigate("Login")}
+                onPress={/* TODO - proper logout... */ () =>
+                    props.navigation.navigate("Login")
+                }
             />
         </Appbar.Header>
     );

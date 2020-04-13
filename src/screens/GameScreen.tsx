@@ -1,20 +1,15 @@
 import * as React from "react";
-import {List, ActivityIndicator, Button, Text, TextInput, Theme, withTheme} from 'react-native-paper';
-import {Dimensions, StyleSheet, View} from "react-native";
-import {Game, JoinInfo, State as GamesListState} from "../redux/reducers/GamesListReducer";
+import {ActivityIndicator, Theme, withTheme} from 'react-native-paper';
+import {Dimensions} from "react-native";
+import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
-import {
-    enterGame,
-    establishGameConnection,
-    fetchGamesList,
-    joinEstablishAndEnterGame,
-    joinGameServer
-} from "../redux/actions/GamesListActions";
+import {joinEstablishAndEnterGame} from "../redux/actions/GamesListActions";
 import {HubConnection} from "@microsoft/signalr";
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { GameDrawerContent } from "../components/GameDrawerContent";
+import {createDrawerNavigator, DrawerContentComponentProps} from '@react-navigation/drawer';
+import GameDrawerContent from "../components/GameDrawerContent";
 import GameDetailsScreen from "./GameDetailsScreen";
-import {Header} from "../components/Header";
+import {SafeAreaView} from "react-native-safe-area-context";
+import GameNotificationsScreen from "./GameNotificationsScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -55,14 +50,18 @@ class GameScreen extends React.Component<Props, State> {
         return (
             <Drawer.Navigator
                 initialRouteName="GameDetails"
-                drawerContent={() => <GameDrawerContent />}
+                drawerContent={(props: DrawerContentComponentProps) => <GameDrawerContent navigation={props.navigation} activeItemKey={props.state.routes[props.state.index].name} game={this.props.game}/>}
                 edgeWidth={Dimensions.get("window").width}
             >
                 <Drawer.Screen name="GameDetails" component={GameDetailsScreen} initialParams={{gameId: this.props.game.Id}}/>
-                <Drawer.Screen name="GameNotifications" component={GameDetailsScreen} initialParams={{gameId: this.props.game.Id}}/>
+                <Drawer.Screen name="GameNotifications" component={GameNotificationsScreen} initialParams={{gameId: this.props.game.Id}}/>
             </Drawer.Navigator>
         );
-        else return (<ActivityIndicator animating/>);
+        else return (
+            <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+                <ActivityIndicator animating size="large"/>
+            </SafeAreaView>
+        );
     }
 }
 

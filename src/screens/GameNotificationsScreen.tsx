@@ -13,18 +13,14 @@ interface Props {
     game: Game;
 }
 
-class GameDetailsScreen extends React.Component<Props, {}> {
+class GameNotificationsScreen extends React.Component<Props, {}> {
     render() {
-        if (this.props.game.EnteredGame)
         return (
             <View style={styles.container}>
-                <Header navigation={this.props.navigation} title="Game Overview"/>
-                <Text>GameId: {this.props.game.Id}</Text>
-                <Text>Name: {this.props.game.Name}</Text>
-                <Text>Day: {this.props.game.DateStarted} / {this.props.game.DateEnding}</Text>
+                <Header navigation={this.props.navigation} title="Notifications"/>
+                <Text>Notifications :)</Text>
             </View>
         );
-        else return (<ActivityIndicator animating/>);
     }
 }
 
@@ -40,4 +36,4 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {game: state.gamesList.Games[gameId.toString()]};
 };
 
-export default withTheme(connect(mapStateToProps)(GameDetailsScreen));
+export default withTheme(connect(mapStateToProps)(GameNotificationsScreen));

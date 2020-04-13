@@ -1,95 +1,76 @@
 import * as React from "react";
 import {StyleSheet, View} from "react-native";
-import {Text, Drawer, TouchableRipple, Switch, Avatar, Title, Caption, Paragraph} from "react-native-paper";
-import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {Drawer, Title} from "react-native-paper";
+import {DrawerContentComponentProps, DrawerContentScrollView} from "@react-navigation/drawer";
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {Game} from "../redux/reducers/GamesListReducer";
 
 
-export class GameDrawerContent extends React.Component<{}, {}> {
+interface Props {
+    activeItemKey: string;
+    navigation: DrawerContentComponentProps<any>;
+    game: Game;
+}
+
+class GameDrawerContent extends React.Component<Props, {}> {
     render() {
         return (
             <DrawerContentScrollView {...this.props}>
                 <View style={styles.drawerContent}>
-                    <View style={styles.userInfoSection}>
-                        <Avatar.Image
-                            source={{
-                                uri:
-                                    'https://pbs.twimg.com/profile_images/952545910990495744/b59hSXUd_400x400.jpg',
-                            }}
-                            size={50}
-                        />
-                        <Title style={styles.title}>Dawid Urbaniak</Title>
-                        <Caption style={styles.caption}>@trensik</Caption>
-                        <View style={styles.row}>
-                            <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>
-                                    202
-                                </Paragraph>
-                                <Caption style={styles.caption}>Following</Caption>
-                            </View>
-                            <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>
-                                    159
-                                </Paragraph>
-                                <Caption style={styles.caption}>Followers</Caption>
-                            </View>
-                        </View>
-                    </View>
-                    <Drawer.Section style={styles.drawerSection}>
-                        <DrawerItem
-                            icon={({ color, size }) => (
-                                <MaterialCommunityIcons
-                                    name="account-outline"
-                                    color={color}
-                                    size={size}
-                                />
-                            )}
-                            label="Profile"
-                            onPress={() => {}}
-                        />
-                        <DrawerItem
-                            icon={({ color, size }) => (
-                                <MaterialCommunityIcons name="tune" color={color} size={size} />
-                            )}
-                            label="Preferences"
-                            onPress={() => {}}
-                        />
-                        <DrawerItem
-                            icon={({ color, size }) => (
-                                <MaterialCommunityIcons
-                                    name="bookmark-outline"
-                                    color={color}
-                                    size={size}
-                                />
-                            )}
-                            label="Bookmarks"
-                            onPress={() => {}}
-                        />
-                    </Drawer.Section>
-                    <Drawer.Section title="Preferences">
-                        <TouchableRipple onPress={() => {}}>
-                            <View style={styles.preference}>
-                                <Text>Dark Theme</Text>
-                                <View pointerEvents="none">
-                                    <Switch value={false} />
-                                </View>
-                            </View>
-                        </TouchableRipple>
-                        <TouchableRipple onPress={() => {}}>
-                            <View style={styles.preference}>
-                                <Text>RTL</Text>
-                                <View pointerEvents="none">
-                                    <Switch value={false} />
-                                </View>
-                            </View>
-                        </TouchableRipple>
-                    </Drawer.Section>
+                    <Title style={styles.title}>{this.props.game.Name}</Title>
+                    <Drawer.Item
+                        icon={({ color, size }) => (
+                            <MaterialCommunityIcons name="book" color={color} size={size}/>
+                        )}
+                        label="Overview"
+                        active={this.props.activeItemKey==="GameDetails"}
+                        onPress={() => this.props.navigation.navigate("GameDetails")}
+                    />
+                    <Drawer.Item
+                        icon={({ color, size }) => (
+                            <MaterialCommunityIcons name="bell" color={color} size={size}/>
+                        )}
+                        label="Notifications"
+                        active={this.props.activeItemKey==="GameNotifications"}
+                        onPress={() => this.props.navigation.navigate("GameNotifications")}
+                    />
+                    <Drawer.Item
+                        icon={({ color, size }) => (
+                            <MaterialCommunityIcons name="message-bulleted" color={color} size={size}/>
+                        )}
+                        label="Messages"
+                        active={this.props.activeItemKey==="GameMessages"}
+                        onPress={() => {}}
+                    />
+                    <Drawer.Item
+                        icon={({ color, size }) => (
+                            <MaterialCommunityIcons name="rocket" color={color} size={size}/>
+                        )}
+                        label="Station Manager"
+                        active={this.props.activeItemKey==="GameStations"}
+                        onPress={() => {}}
+                    />
+                    <Drawer.Item
+                        icon={({ color, size }) => (
+                            <MaterialCommunityIcons name="chat" color={color} size={size}/>
+                        )}
+                        label="Chat"
+                        active={this.props.activeItemKey==="GameChat"}
+                        onPress={() => {}}
+                    />
+                    <Drawer.Item
+                        icon={({ color, size }) => (
+                            <MaterialCommunityIcons name="account-group" color={color} size={size}/>
+                        )}
+                        label="Alliance Manager"
+                        active={this.props.activeItemKey==="GameAlliance"}
+                        onPress={() => {}}
+                    />
                 </View>
             </DrawerContentScrollView>
         );
     }
 }
-
 
 const styles = StyleSheet.create({
     drawerContent: {
@@ -130,3 +111,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
 });
+
+
+export default GameDrawerContent;
