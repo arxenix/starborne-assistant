@@ -39,7 +39,7 @@ export class WebSocketWrapper extends WebSocket {
 
 export class ConsoleLogger implements ILogger {
     log(level: LogLevel, message: string): void {
-        console.log(`CONSOLELOGGER [${LogLevel[level]}] ${message}`);
+        console.debug(`WebSocket Log [${LogLevel[level]}] ${message}`);
     }
 }
 
@@ -64,7 +64,7 @@ export function buildHubConnection(url: string): HubConnection {
     // @ts-ignore
     return new HubConnectionBuilder().withUrl(constants.WEBSOCKET_HUB_URL, {
         logger: new ConsoleLogger(),
-        logMessageContent: true,
+        logMessageContent: __DEV__,
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
         withCredentials: true,

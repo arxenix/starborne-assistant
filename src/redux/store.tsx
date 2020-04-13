@@ -28,9 +28,12 @@ const loggerMiddleware = createLogger({
 });
 */
 
-const loggerMiddleware = createLogger();
+const loggerMiddleware = createLogger({
+    predicate: (getState, action) => __DEV__
+});
 
 type DispatchFunctionType = ThunkDispatch<RootState, {}, AnyAction>
+
 const middleware = applyMiddleware<DispatchFunctionType, RootState>(
     loggerMiddleware,
     thunkMiddleware

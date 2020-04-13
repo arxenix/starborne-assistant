@@ -1,8 +1,8 @@
-import {AnyAction, Dispatch} from 'redux';
+import {AnyAction} from 'redux';
 import constants from "../../config/constants";
 import {encodeFormData} from "../../utils/utils";
 import {LOGIN_FAILURE, LOGIN_START, LOGIN_SUCCESS} from "./actions";
-import { ThunkAction, ThunkDispatch } from 'redux-thunk'
+import {ThunkAction, ThunkDispatch} from 'redux-thunk';
 
 
 //TODO transform this into async/await

@@ -8,12 +8,12 @@ import {
     UPDATE_NOTIFICATIONS
 } from "./actions";
 import {fetchJsonWithAccessToken} from "../../utils/api";
-import {State as GamesState, Game, JoinInfo} from "../reducers/GamesListReducer";
+import {JoinInfo, State as GamesState} from "../reducers/GamesListReducer";
 import {encodeFormData} from "../../utils/utils";
 import {ClientType, EnterGameModel, RoleType} from "../../models/models";
 import {buildHubConnection} from "../../utils/websockets";
 import {HubConnection} from "@microsoft/signalr";
-import { ThunkAction, ThunkDispatch } from 'redux-thunk'
+import {ThunkAction, ThunkDispatch} from 'redux-thunk'
 import {RootState} from "../reducers";
 
 export function fetchGamesList(): ThunkAction<Promise<void>, {}, {}, AnyAction> {
@@ -35,8 +35,8 @@ export function joinGameServer(gameId: number): ThunkAction<Promise<JoinInfo>, {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         }) as JoinInfo;
-        console.log("received JoinServer Response:");
-        console.log(r);
+        console.debug("received JoinServer Response:");
+        console.debug(r);
         dispatch({type: JOIN_GAME_SERVER, payload: {Id: gameId, JoinInfo: r}});
         return r;
     }
@@ -53,7 +53,7 @@ export function establishGameConnection(gameId: number): ThunkAction<Promise<Hub
         });
 
         await hubConnection.start();
-        console.log(`Connected to game server name: ${game.Name}, id: ${game.Id}, url: ${game.Server.Url}`);
+        console.debug(`Connected to game server name: ${game.Name}, id: ${game.Id}, url: ${game.Server.Url}`);
         dispatch({type: ESTABLISH_GAME_SERVER_CONNECTION, payload: {Id: game.Id, HubConnection: hubConnection}});
         return hubConnection;
     }
@@ -69,8 +69,8 @@ export function enterGame(gameId: number): ThunkAction<Promise<void>, RootState,
                 PlayerJoinRole: RoleType.User,
                 ClientType: ClientType.Game
             });
-        console.log("ENTERED GAME!");
-        console.log(r);
+        console.debug("ENTERED GAME!");
+        console.debug(r);
         dispatch({type: ENTER_GAME, payload: {Id: game.Id}})
     }
 }

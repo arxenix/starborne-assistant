@@ -5,7 +5,7 @@ import {Provider} from "react-redux";
 import {store, persistor} from "./src/redux/store"
 import {PersistGate} from "redux-persist/integration/react";
 import {NavigationContainer, DarkTheme} from "@react-navigation/native";
-import { createStackNavigator, StackHeaderProps } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import GamesListScreen from "./src/screens/GamesListScreen";
 import GameScreen from "./src/screens/GameScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
