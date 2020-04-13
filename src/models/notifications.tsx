@@ -5,6 +5,7 @@ export interface PersistentNotification {
     category: PersistentNotificationCategory;
     id: number; //unique id
     empireId: number;
+    dateCreated: string;
 }
 
 export interface SolarFlareDiscoveredNotification extends PersistentNotification {

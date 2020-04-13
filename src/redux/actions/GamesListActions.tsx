@@ -1,6 +1,12 @@
 import {AnyAction} from 'redux';
 import constants from "../../config/constants";
-import {ENTER_GAME, ESTABLISH_GAME_SERVER_CONNECTION, JOIN_GAME_SERVER, UPDATE_GAMES_LIST} from "./actions";
+import {
+    ENTER_GAME,
+    ESTABLISH_GAME_SERVER_CONNECTION,
+    JOIN_GAME_SERVER,
+    UPDATE_GAMES_LIST,
+    UPDATE_NOTIFICATIONS
+} from "./actions";
 import {fetchJsonWithAccessToken} from "../../utils/api";
 import {State as GamesState, Game, JoinInfo} from "../reducers/GamesListReducer";
 import {encodeFormData} from "../../utils/utils";
@@ -78,16 +84,11 @@ export function joinEstablishAndEnterGame(gameId: number): ThunkAction<Promise<H
     }
 }
 
-
-//TODO finishme
-export function fetchNotifications(game: Game): ThunkAction<Promise<void>, {}, {}, AnyAction> {
-    return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+export function fetchNotifications(gameId: number): ThunkAction<Promise<void>, RootState, {}, AnyAction> {
+    return async (dispatch: ThunkDispatch<RootState, {}, AnyAction>, getState) => {
+        const game = getState().gamesList.Games[gameId.toString()];
         const r = await InvokeGetNotifications(game.HubConnection!!) as any;
-        for (const n of r.content) {
-
-        }
-        console.log("FETCHED NOTIFICATIONS: ");
-        console.log(r);
+        dispatch({type: UPDATE_NOTIFICATIONS, payload: {Id: game.Id, Notifications: r.content}});
     }
 }
 

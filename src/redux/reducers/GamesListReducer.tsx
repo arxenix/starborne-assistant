@@ -1,4 +1,10 @@
-import {ENTER_GAME, ESTABLISH_GAME_SERVER_CONNECTION, JOIN_GAME_SERVER, UPDATE_GAMES_LIST} from "../actions/actions";
+import {
+    ENTER_GAME,
+    ESTABLISH_GAME_SERVER_CONNECTION,
+    JOIN_GAME_SERVER,
+    UPDATE_GAMES_LIST,
+    UPDATE_NOTIFICATIONS
+} from "../actions/actions";
 import {ServerStatus} from "../../models/models";
 import {HubConnection} from "@microsoft/signalr";
 import {PersistentNotification} from "../../models/notifications";
@@ -24,7 +30,7 @@ export interface Game {
     HubConnection?: HubConnection;
     EnteredGame?: boolean;
     GameState?: GameState;
-    PersistentNotifications?: PersistentNotification[];
+    Notifications?: PersistentNotification[];
 }
 
 export interface GameState {
@@ -90,6 +96,17 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                         ...state.Games[action.payload.Id],
                         EnteredGame: true,
                         GameState: {}
+                    }
+                }
+            };
+        case UPDATE_NOTIFICATIONS:
+            return {
+                ...state,
+                Games: {
+                    ...state.Games,
+                    [action.payload.Id]: {
+                        ...state.Games[action.payload.Id],
+                        Notifications: action.payload.Notifications
                     }
                 }
             };

@@ -51,7 +51,7 @@ class GameScreen extends React.Component<Props, State> {
             <Drawer.Navigator
                 initialRouteName="GameDetails"
                 drawerContent={(props: DrawerContentComponentProps) => <GameDrawerContent navigation={props.navigation} activeItemKey={props.state.routes[props.state.index].name} game={this.props.game}/>}
-                edgeWidth={Dimensions.get("window").width}
+                edgeWidth={Dimensions.get("window").width * 0.4}
             >
                 <Drawer.Screen name="GameDetails" component={GameDetailsScreen} initialParams={{gameId: this.props.game.Id}}/>
                 <Drawer.Screen name="GameNotifications" component={GameNotificationsScreen} initialParams={{gameId: this.props.game.Id}}/>
