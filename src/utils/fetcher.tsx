@@ -3,35 +3,74 @@ import * as TaskManager from 'expo-task-manager';
 import {store} from '../redux/store'
 import {login} from "../redux/actions/AuthActions";
 import {
-    enterGame,
-    establishGameConnection,
     fetchGamesList,
+    joinEstablishAndEnterGame,
     fetchNotifications,
-    joinGameServer
 } from "../redux/actions/GamesListActions";
+import {PersistentNotification, PersistentNotificationCategory} from "../models/notifications";
+import {
+    cleanNotificationCategory,
+    cleanNotificationType,
+    notifAttrs,
+    sortNotificationsByMostRecent
+} from "./notifications";
+import {Notifications} from "expo";
 
-const TASK_NAME = "StarborneFetcher";
-TaskManager.defineTask(TASK_NAME, async () => {
-    try {
-        if (store.getState().auth.user) {
-            const {user, password} = store.getState().auth;
-            await store.dispatch(login(user!!, password!!));
-            await store.dispatch(fetchGamesList());
+const FETCH_TASK = "StarborneFetcher";
 
-            for (const game of store.getState().gamesList.Games) {
-                if (game.HasRequestingPlayer) {
-                    await store.dispatch(joinGameServer(game));
-                    const hubConnection = await store.dispatch(establishGameConnection(game));
-                    await store.dispatch(enterGame(game));
-                    await store.dispatch(fetchNotifications(game));
+export default async function setupBackgroundTask() {
+    TaskManager.defineTask(FETCH_TASK, async () => {
+        try {
+            if (store.getState().auth.user) {
+                const {user, password} = store.getState().auth;
+                await store.dispatch(login(user!!, password!!));
+                await store.dispatch(fetchGamesList());
+
+                for (const game of Object.values(store.getState().gamesList.Games)) {
+                    if (game.HasRequestingPlayer) {
+                        await store.dispatch(joinEstablishAndEnterGame(game.Id));
+                        await store.dispatch(fetchNotifications(game.Id));
+                        const notifications: PersistentNotification[] = await store.getState().gamesList.Games[game.Id].Notifications!!;
+
+                        await Notifications.presentLocalNotificationAsync({
+                            title: "Starborne",
+                            body: `${notifications.length} notifications`,
+                        });
+
+                        /*
+                        sortNotificationsByMostRecent(notifications);
+                        for (const notification of notifications) {
+                            const notificationCategory = cleanNotificationCategory(notification.category);
+                            const notificationType = cleanNotificationType(notification.$type);
+
+                            const attrs = notifAttrs(notification);
+                            let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join("\n");
+                            await Notifications.presentLocalNotificationAsync({
+                                title: notificationType,
+                                body: notifBody,
+                            });
+                        }
+                         */
+                    }
                 }
             }
+            else {
+                return BackgroundFetch.Result.Failed;
+            }
 
+            //return receivedNewData ? BackgroundFetch.Result.NewData : BackgroundFetch.Result.NoData;
+            return BackgroundFetch.Result.NewData;
+        } catch (error) {
+            return BackgroundFetch.Result.Failed;
         }
-
-        //return receivedNewData ? BackgroundFetch.Result.NewData : BackgroundFetch.Result.NoData;
-        return BackgroundFetch.Result.NewData;
-    } catch (error) {
-        return BackgroundFetch.Result.Failed;
+    });
+    const status = await BackgroundFetch.getStatusAsync();
+    if (status === BackgroundFetch.Status.Available) {
+        await BackgroundFetch.setMinimumIntervalAsync(15*60)
+        await BackgroundFetch.registerTaskAsync(FETCH_TASK, {
+            minimumInterval: 15*60,
+            stopOnTerminate: false,
+            startOnBoot: true
+        })
     }
-});
+}

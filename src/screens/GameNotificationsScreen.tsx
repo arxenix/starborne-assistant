@@ -7,6 +7,7 @@ import {DrawerNavigationProp} from "@react-navigation/drawer";
 import {Header} from "../components/Header";
 import {fetchNotifications} from "../redux/actions/GamesListActions";
 import {Notification} from "../components/Notification";
+import {sortNotificationsByMostRecent} from "../utils/notifications";
 
 interface Props {
     route: any;
@@ -37,15 +38,15 @@ class GameNotificationsScreen extends React.Component<Props, State> {
 
     render() {
         if (this.props.game.Notifications) {
-            this.props.game.Notifications.sort((a, b) =>
-            {
-                return new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime();
-            })
+            sortNotificationsByMostRecent(this.props.game.Notifications);
         }
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} title="Notifications"/>
-                {!this.props.game.Notifications && <ActivityIndicator animating/>}
+                {(this.props.game.Notifications===undefined) &&
+                <ActivityIndicator animating/>}
+
+
                 <ScrollView
                     refreshControl={
                         <RefreshControl refreshing={this.state.refreshing}

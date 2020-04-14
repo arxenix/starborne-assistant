@@ -3,12 +3,13 @@ import {
     ESTABLISH_GAME_SERVER_CONNECTION,
     JOIN_GAME_SERVER,
     UPDATE_GAMES_LIST,
-    UPDATE_NOTIFICATIONS
+    UPDATE_NOTIFICATIONS, UPDATE_STATIONS
 } from "../actions/actions";
 import {ServerStatus} from "../../models/models";
 import {HubConnection} from "@microsoft/signalr";
 import {PersistentNotification} from "../../models/notifications";
 import {AnyAction} from "redux";
+import {Station} from "../../models/Station";
 
 export interface State {
     Games: {[Id: string]: Game};
@@ -29,17 +30,10 @@ export interface Game {
     JoinInfo?: JoinInfo;
     HubConnection?: HubConnection;
     EnteredGame?: boolean;
-    GameState?: GameState;
     Notifications?: PersistentNotification[];
+    Stations?: Station[];
 }
 
-export interface GameState {
-    Stations?: Stations;
-}
-
-export interface Stations {
-
-}
 
 export interface JoinInfo {
     PlayerJoinToken: string;
@@ -95,7 +89,6 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
                         EnteredGame: true,
-                        GameState: {}
                     }
                 }
             };
@@ -107,6 +100,17 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
                         Notifications: action.payload.Notifications
+                    }
+                }
+            };
+        case UPDATE_STATIONS:
+            return {
+                ...state,
+                Games: {
+                    ...state.Games,
+                    [action.payload.Id]: {
+                        ...state.Games[action.payload.Id],
+                        Stations: action.payload.Stations
                     }
                 }
             };

@@ -9,9 +9,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import GamesListScreen from "./src/screens/GamesListScreen";
 import GameScreen from "./src/screens/GameScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import setupBackgroundTask from "./src/utils/fetcher";
 
 const Stack = createStackNavigator();
 
+setupBackgroundTask();
 
 export default function Main() {
   return (

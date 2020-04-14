@@ -82,6 +82,11 @@ export enum ClientType {
     Launcher
 }
 
+export interface HexIndex {
+    Q: number;
+    R: number;
+}
+
 export interface EnterGameModel {
     PlayerIdGlobal: string;
     PlayerJoinToken: string;
@@ -90,5 +95,3 @@ export interface EnterGameModel {
     PlayerJoinRole: RoleType;
     ClientType: ClientType;
 }
-
-

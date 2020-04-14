@@ -5,7 +5,8 @@ import {
     ESTABLISH_GAME_SERVER_CONNECTION,
     JOIN_GAME_SERVER,
     UPDATE_GAMES_LIST,
-    UPDATE_NOTIFICATIONS
+    UPDATE_NOTIFICATIONS,
+    UPDATE_STATIONS
 } from "./actions";
 import {fetchJsonWithAccessToken} from "../../utils/api";
 import {JoinInfo, State as GamesState} from "../reducers/GamesListReducer";
@@ -92,10 +93,22 @@ export function fetchNotifications(gameId: number): ThunkAction<Promise<void>, R
     }
 }
 
+export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootState, {}, AnyAction> {
+    return async (dispatch: ThunkDispatch<RootState, {}, AnyAction>, getState) => {
+        const game = getState().gamesList.Games[gameId.toString()];
+        const r = await InvokeGetStations(game.HubConnection!!) as any;
+        dispatch({type: UPDATE_STATIONS, payload: {Id: game.Id, Stations: r.content}});
+    }
+}
+
 export function InvokeEnterGame<T>(connection: HubConnection, model: EnterGameModel) {
     return connection.invoke<T>("EnterGame", model);
 }
 
 export function InvokeGetNotifications<T>(connection: HubConnection) {
     return connection.invoke<T>("GetNotifications");
+}
+
+export function InvokeGetStations<T>(connection: HubConnection) {
+    return connection.invoke<T>("GetStations");
 }

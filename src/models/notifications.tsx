@@ -8,15 +8,6 @@ export interface PersistentNotification {
     dateCreated: string;
 }
 
-export interface SolarFlareDiscoveredNotification extends PersistentNotification {
-    position: Position;
-}
-
-export interface Position {
-    q: number;
-    r: number;
-}
-
 export enum PersistentNotificationCategory
 {
     // Token: 0x04000536 RID: 1334

@@ -41,8 +41,7 @@ class GameScreen extends React.Component<Props, State> {
     }
 
     shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>, nextContext: any): boolean {
-        return (this.props.game.EnteredGame !== nextProps.game.EnteredGame) ||
-            (this.props.game.GameState !== nextProps.game.GameState);
+        return (this.props.game.EnteredGame !== nextProps.game.EnteredGame);
     }
 
     render() {
