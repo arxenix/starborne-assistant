@@ -32,32 +32,32 @@ export default async function setupBackgroundTask() {
                         await store.dispatch(fetchNotifications(game.Id));
                         const notifications: PersistentNotification[] = await store.getState().gamesList.Games[game.Id].Notifications!!;
 
-                        await Notifications.presentLocalNotificationAsync({
-                            title: "Starborne",
-                            body: `${notifications.length} notifications`,
-                        });
-
-                        /*
-                        sortNotificationsByMostRecent(notifications);
-                        for (const notification of notifications) {
-                            const notificationCategory = cleanNotificationCategory(notification.category);
-                            const notificationType = cleanNotificationType(notification.$type);
-
-                            const attrs = notifAttrs(notification);
-                            let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join("\n");
+                        if (notifications.length >= 5) {
                             await Notifications.presentLocalNotificationAsync({
-                                title: notificationType,
-                                body: notifBody,
+                                title: `${game.Name} Notifications`,
+                                body: `You have ${notifications.length} unread notifications!`,
                             });
                         }
-                         */
+                        else {
+                            sortNotificationsByMostRecent(notifications);
+                            for (const notification of notifications) {
+                                const notificationCategory = cleanNotificationCategory(notification.category);
+                                const notificationType = cleanNotificationType(notification.$type);
+
+                                const attrs = notifAttrs(notification);
+                                let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join("\n");
+                                await Notifications.presentLocalNotificationAsync({
+                                    title: `${game.Name} - ${notificationType}`,
+                                    body: notifBody,
+                                });
+                            }
+                        }
                     }
                 }
             }
             else {
                 return BackgroundFetch.Result.Failed;
             }
-
             //return receivedNewData ? BackgroundFetch.Result.NewData : BackgroundFetch.Result.NoData;
             return BackgroundFetch.Result.NewData;
         } catch (error) {
