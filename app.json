@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "starborne_mobile",
-    "slug": "starborne_mobile",
+    "name": "Starborne Assistant",
+    "slug": "starborne-assistant",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,7 +21,13 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "dev.arxenix.starborneassistant",
+      "buildNumber": "0.0.1",
       "supportsTablet": true
+    },
+    "android": {
+      "package": "dev.arxenix.starborneassistant",
+      "versionCode": 1
     }
   }
 }
