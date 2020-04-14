@@ -1,10 +1,11 @@
 import * as React from "react";
-import {ActivityIndicator, Appbar, Text, Theme, withTheme} from 'react-native-paper';
+import {ActivityIndicator, Appbar, Text, Theme, withTheme, ProgressBar} from 'react-native-paper';
 import {StyleSheet, View} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 import {Header} from "../components/Header";
+import {getGameProgress} from "../utils/utils";
 
 interface Props {
     route: any;
@@ -15,15 +16,18 @@ interface Props {
 
 class GameDetailsScreen extends React.Component<Props, {}> {
     render() {
-        if (this.props.game.EnteredGame)
-        return (
-            <View style={styles.container}>
-                <Header navigation={this.props.navigation} title="Game Overview"/>
-                <Text>GameId: {this.props.game.Id}</Text>
-                <Text>Name: {this.props.game.Name}</Text>
-                <Text>Day: {this.props.game.DateStarted} / {this.props.game.DateEnding}</Text>
-            </View>
-        );
+        if (this.props.game.EnteredGame) {
+            const [daysIn, totalDays] = getGameProgress(new Date(this.props.game.DateStarted), new Date(this.props.game.DateEnding));
+            return (
+                <View style={styles.container}>
+                    <Header navigation={this.props.navigation} title="Game Overview"/>
+                    <Text>GameId: {this.props.game.Id}</Text>
+                    <Text>Name: {this.props.game.Name}</Text>
+                    <Text>Day: {daysIn}/{totalDays}</Text>
+                    <ProgressBar progress={daysIn/totalDays}/>
+                </View>
+            );
+        }
         else return (<ActivityIndicator animating/>);
     }
 }
