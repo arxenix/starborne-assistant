@@ -76,7 +76,7 @@ lines = notification_str.strip().split("\n")
 ts_enum = 'export enum PersistentNotificationType {\n'
 for line in lines:
     notif_name = line.split('typeof(')[1].split(')')[0]
-    notif_typename = 'Starborne.ClientObjects.Notifications.'+notif_name + ', Starborne.ClientObjects.Notifications'
+    notif_typename = 'Starborne.ClientObjects.Notifications.'+notif_name + ', Starborne.Server'
     ts_enum += '    %s = "%s", \n' % (notif_name, notif_typename)
 ts_enum += '}\n'
 
