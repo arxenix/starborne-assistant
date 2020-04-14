@@ -1,16 +1,17 @@
 import * as React from "react";
-import {PersistentNotification, PersistentNotificationCategory} from "../models/notifications";
+import {PersistentNotification} from "../models/notifications";
 import {Avatar, Button, Card, DataTable} from "react-native-paper";
 import moment from "moment";
-import {cleanNotificationCategory, cleanNotificationType, notifAttrs, notifIcon} from "../utils/notifications";
+import {cleanNotificationType, notifAttrs, notifIcon} from "../utils/notifications";
 
 interface Props {
     notification: PersistentNotification;
+    onDismiss(notificationIds: number[]): Promise<void>;
 }
 
 
 
-const NotifData = ({notification}: Props) => {
+const NotifData = ({notification}: {notification: PersistentNotification}) => {
     const attrs = notifAttrs(notification);
     return (
         <DataTable>
@@ -24,21 +25,41 @@ const NotifData = ({notification}: Props) => {
     );
 }
 
+interface State {
+    dismissing: boolean;
+}
 
-export const Notification = ({notification}: Props) => {
-    const date = new Date(notification.dateCreated);
-    return (
-        <Card style={{margin: 10}}>
-            <Card.Title
-                title={cleanNotificationType(notification.$type)}
-                subtitle={`${date.toLocaleString()} (~${moment(date).fromNow()})`}
-                left={(props: any) => <Avatar.Icon {...props} icon={notifIcon(notification)} />} />
-            <Card.Content>
-                <NotifData notification={notification}/>
-            </Card.Content>
-            <Card.Actions>
-                <Button>Dismiss</Button>
-            </Card.Actions>
-        </Card>
-    );
+export class Notification extends React.Component<Props, State> {
+    readonly state = {
+        dismissing: false
+    }
+
+    handlePressDismiss = async () => {
+        this.setState({dismissing: true});
+        await this.props.onDismiss([this.props.notification.id]);
+        this.setState({dismissing: false});
+    }
+
+    render() {
+        const date = new Date(this.props.notification.dateCreated);
+        return (
+            <Card style={{margin: 10}}>
+                <Card.Title
+                    title={cleanNotificationType(this.props.notification.$type)}
+                    subtitle={`${date.toLocaleString()} (~${moment(date).fromNow()})`}
+                    left={(props: any) => <Avatar.Icon {...props} icon={notifIcon(this.props.notification)}/>}/>
+                <Card.Content>
+                    <NotifData notification={this.props.notification}/>
+                </Card.Content>
+                <Card.Actions>
+                    <Button
+                        onPress={this.handlePressDismiss}
+                        loading={this.state.dismissing}
+                    >
+                        Dismiss
+                    </Button>
+                </Card.Actions>
+            </Card>
+        );
+    }
 };

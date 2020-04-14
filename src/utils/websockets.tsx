@@ -64,7 +64,8 @@ export function buildHubConnection(url: string): HubConnection {
     // @ts-ignore
     return new HubConnectionBuilder().withUrl(constants.WEBSOCKET_HUB_URL, {
         logger: new ConsoleLogger(),
-        logMessageContent: __DEV__,
+        //logMessageContent: __DEV__,
+        logMessageContent: false,
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
         withCredentials: true,

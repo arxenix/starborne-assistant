@@ -95,3 +95,8 @@ export interface EnterGameModel {
     PlayerJoinRole: RoleType;
     ClientType: ClientType;
 }
+
+export interface GameActionResult {
+    Message: string;
+    IsSuccess: boolean;
+}

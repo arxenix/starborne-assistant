@@ -1,5 +1,9 @@
 import {PersistentNotificationType} from "./PersistentNotificationType";
 
+export interface MarkNotificationAsReadBindingModel {
+    NotificationIds: number[];
+}
+
 export interface PersistentNotification {
     "$type": PersistentNotificationType;
     category: PersistentNotificationCategory;

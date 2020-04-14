@@ -34,9 +34,9 @@ function notifIconFromCategory(category: PersistentNotificationCategory) {
             return "test-tube";
         case PersistentNotificationCategory.DailyRewards:
         case PersistentNotificationCategory.ProgressRewards:
+        case PersistentNotificationCategory.Achievements:
             return "treasure-chest";
         case PersistentNotificationCategory.DailyChallenges:
-        case PersistentNotificationCategory.Achievements:
         case PersistentNotificationCategory.TutorialSequence:
         case PersistentNotificationCategory.Tutorial:
         case PersistentNotificationCategory.Miscellaneous:

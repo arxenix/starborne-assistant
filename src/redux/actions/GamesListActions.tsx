@@ -11,11 +11,12 @@ import {
 import {fetchJsonWithAccessToken} from "../../utils/api";
 import {JoinInfo, State as GamesState} from "../reducers/GamesListReducer";
 import {encodeFormData} from "../../utils/utils";
-import {ClientType, EnterGameModel, RoleType} from "../../models/models";
+import {ClientType, EnterGameModel, GameActionResult, RoleType} from "../../models/models";
 import {buildHubConnection} from "../../utils/websockets";
 import {HubConnection} from "@microsoft/signalr";
 import {ThunkAction, ThunkDispatch} from 'redux-thunk'
 import {RootState} from "../reducers";
+import {MarkNotificationAsReadBindingModel} from "../../models/notifications";
 
 export function fetchGamesList(): ThunkAction<Promise<void>, {}, {}, AnyAction> {
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
@@ -93,12 +94,27 @@ export function fetchNotifications(gameId: number): ThunkAction<Promise<void>, R
     }
 }
 
+export function markNotificationsAsRead(gameId: number, notificationIds: number[]): ThunkAction<Promise<void>, RootState, {}, AnyAction> {
+    return async (dispatch: ThunkDispatch<RootState, {}, AnyAction>, getState) => {
+        const game = getState().gamesList.Games[gameId.toString()];
+        const r = await InvokeMarkNotificationAsRead(game.HubConnection!!, {NotificationIds: notificationIds});
+        console.log("MarkNotificationAsRead result: ");
+        console.log(r);
+        const Notifications = game.Notifications!!.filter(n => notificationIds.indexOf(n.id) === -1);
+        dispatch({type: UPDATE_NOTIFICATIONS, payload: {Id: game.Id, Notifications: Notifications}});
+    }
+}
+
 export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootState, {}, AnyAction> {
     return async (dispatch: ThunkDispatch<RootState, {}, AnyAction>, getState) => {
         const game = getState().gamesList.Games[gameId.toString()];
         const r = await InvokeGetStations(game.HubConnection!!) as any;
         dispatch({type: UPDATE_STATIONS, payload: {Id: game.Id, Stations: r.content}});
     }
+}
+
+export function InvokeMarkNotificationAsRead(connection: HubConnection, model: MarkNotificationAsReadBindingModel) {
+    return connection.invoke<GameActionResult>("MarkNotificationAsRead", model);
 }
 
 export function InvokeEnterGame<T>(connection: HubConnection, model: EnterGameModel) {
