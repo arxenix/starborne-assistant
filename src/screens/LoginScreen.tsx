@@ -21,8 +21,8 @@ interface State {
 
 class LoginScreen extends React.Component<Props, State> {
   readonly state: State = {
-    user: "",
-    password: ""
+    user: this.props.user || "",
+    password: this.props.password || ""
   };
 
   passwordInputRef = React.createRef<any>();
