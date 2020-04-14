@@ -1,6 +1,6 @@
 import * as React from "react";
 import {PersistentNotification, PersistentNotificationCategory} from "../models/notifications";
-import {Card, Button, Avatar, DataTable} from "react-native-paper";
+import {Avatar, Button, Card, DataTable} from "react-native-paper";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
 import moment from "moment";
 
@@ -15,15 +15,51 @@ function cleanNotificationType(typeStr: string) {
     return typeStr ? typeStr : "Unknown";
 }
 
-function iconFromType(type: PersistentNotificationType) {
-    switch (type) {
-        case PersistentNotificationType.SolarFlareDiscoveredNotification:
-            return "white-balance-sunny"
+function notifIconFromCategory(category: PersistentNotificationCategory) {
+    switch(category) {
+        case PersistentNotificationCategory.Attacks:
+            return "rocket";
+        case PersistentNotificationCategory.AllianceAndCoalition:
+            return "account-group";
+        case PersistentNotificationCategory.Reports:
+            return "message-bulleted";
+        case PersistentNotificationCategory.PolicyResearch:
+            return "test-tube";
+        case PersistentNotificationCategory.DailyRewards:
+        case PersistentNotificationCategory.ProgressRewards:
+            return "treasure-chest";
+        case PersistentNotificationCategory.DailyChallenges:
+        case PersistentNotificationCategory.Achievements:
+        case PersistentNotificationCategory.TutorialSequence:
+        case PersistentNotificationCategory.Tutorial:
+        case PersistentNotificationCategory.Miscellaneous:
+        case PersistentNotificationCategory.None:
+        case PersistentNotificationCategory.EmpireEvents:
+        case PersistentNotificationCategory.Status:
+        case PersistentNotificationCategory.GlobalEvents:
+        case PersistentNotificationCategory.Missions:
         default:
-            return "alert-circle"
+            return "alert-circle";
     }
 }
 
+function notifIcon(notif: PersistentNotification) {
+    let icon = notifIconFromCategory(notif.category);
+    // special overrides
+    switch (notif.$type) {
+        case PersistentNotificationType.SolarFlareDiscoveredNotification:
+        case PersistentNotificationType.SolarFlareExpiredNotification:
+        case PersistentNotificationType.SolarFlareFinishedBySomeoneNotification:
+            icon = "star";
+            break;
+        case PersistentNotificationType.OneOfYourStationsHasBeenSpiedNotification:
+            icon = "sunglasses";
+            break;
+        default:
+            break;
+    }
+    return icon;
+}
 
 const NotifData = ({notification}: Props) => {
     const attrs: [string, string][] = [];
@@ -71,7 +107,7 @@ export const Notification = ({notification}: Props) => {
             <Card.Title
                 title={cleanNotificationType(notification.$type)}
                 subtitle={`${date.toLocaleString()} (~${moment(date).fromNow()})`}
-                left={(props: any) => <Avatar.Icon {...props} icon={iconFromType(notification.$type)} />} />
+                left={(props: any) => <Avatar.Icon {...props} icon={notifIcon(notification)} />} />
             <Card.Content>
                 <NotifData notification={notification}/>
             </Card.Content>
