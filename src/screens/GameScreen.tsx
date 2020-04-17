@@ -10,6 +10,7 @@ import GameDrawerContent from "../components/GameDrawerContent";
 import GameDetailsScreen from "./GameDetailsScreen";
 import {SafeAreaView} from "react-native-safe-area-context";
 import GameNotificationsScreen from "./GameNotificationsScreen";
+import GameStationsScreen from "./GameStationsScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -27,7 +28,7 @@ interface Props {
     route: any;
     theme: Theme;
     game: Game;
-    joinEstablishAndEnterGame(gameId: number): Promise<HubConnection>;
+    joinEstablishAndEnterGame(gameId: number): Promise<void>;
 }
 
 interface State {
@@ -54,6 +55,7 @@ class GameScreen extends React.Component<Props, State> {
             >
                 <Drawer.Screen name="GameDetails" component={GameDetailsScreen} initialParams={{gameId: this.props.game.Id}}/>
                 <Drawer.Screen name="GameNotifications" component={GameNotificationsScreen} initialParams={{gameId: this.props.game.Id}}/>
+                <Drawer.Screen name="GameStations" component={GameStationsScreen} initialParams={{gameId: this.props.game.Id}}/>
             </Drawer.Navigator>
         );
         else return (

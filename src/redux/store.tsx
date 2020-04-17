@@ -35,7 +35,7 @@ const loggerMiddleware = createLogger({
 type DispatchFunctionType = ThunkDispatch<RootState, {}, AnyAction>
 
 const middleware = applyMiddleware<DispatchFunctionType, RootState>(
-    loggerMiddleware,
+    //loggerMiddleware,
     thunkMiddleware
 );
 const store = createStore(rootReducer, middleware);

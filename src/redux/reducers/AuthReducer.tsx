@@ -1,5 +1,5 @@
 import {LOGIN_FAILURE, LOGIN_START, LOGIN_SUCCESS, REFRESH_TOKEN} from '../actions/actions';
-import {Action, AnyAction} from "redux";
+import {AnyAction} from "redux";
 
 export interface Auth {
     access_token: string;
@@ -20,7 +20,7 @@ export interface State {
     auth_status: AUTH_STATUS;
     user: string | null;
     password: string | null;
-    error: string | null;
+    login_error: string | null;
 }
 
 const INITIAL_STATE = {
@@ -28,7 +28,7 @@ const INITIAL_STATE = {
     auth_status: AUTH_STATUS.UNINITIALIZED,
     user: null,
     password: null,
-    error: null
+    login_error: null
 };
 
 export default (state: State = INITIAL_STATE, action: AnyAction) => {
@@ -37,14 +37,14 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
             return {
                 ...state,
                 auth_status: AUTH_STATUS.SUCCESS,
-                error: null,
+                login_error: null,
                 ...action.payload
             };
         case REFRESH_TOKEN:
             return {
                 ...state,
                 auth_status: AUTH_STATUS.SUCCESS,
-                error: null,
+                login_error: null,
                 ...action.payload
             };
         case LOGIN_FAILURE:
@@ -52,14 +52,14 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                 ...state,
                 auth: null,
                 auth_status: AUTH_STATUS.FAILURE,
-                error: action.payload
+                login_error: action.payload
             };
         case LOGIN_START:
             return {
                 ...state,
                 auth: null,
                 auth_status: AUTH_STATUS.LOADING,
-                error: null
+                login_error: null
             };
         default:
             return state;

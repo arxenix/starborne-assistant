@@ -62,8 +62,8 @@ export function connectWebSocket(url: string) {
 
 export function buildHubConnection(url: string): HubConnection {
     // @ts-ignore
-    return new HubConnectionBuilder().withUrl(constants.WEBSOCKET_HUB_URL, {
-        logger: new ConsoleLogger(),
+    return new HubConnectionBuilder().withUrl(url, {
+        //logger: new ConsoleLogger(),
         //logMessageContent: __DEV__,
         logMessageContent: false,
         skipNegotiation: true,

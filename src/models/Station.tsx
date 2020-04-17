@@ -12,7 +12,7 @@ export interface Station {
     ClaimStrength: number;
     ClaimRadius: number;
     StackingLimit: number;
-    TotalFleetsServices: number;
+    TotalFleetsServiced: number;
     ResourceHandler: ResourceHandler;
     //UnitProductionQueueMaxLength: Timespan;
     //BuildingProductionQueueMaxLength: Timespan;

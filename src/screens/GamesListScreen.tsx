@@ -8,6 +8,8 @@ import {enterGame, establishGameConnection, fetchGamesList, joinGameServer} from
 import {HubConnection} from "@microsoft/signalr";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {SafeAreaView} from "react-native-safe-area-context";
+import {RootState} from "../redux/reducers";
+import {ErrorComponent} from "../components/ErrorComponent";
 
 interface Props extends GamesListState {
     navigation: StackNavigationProp<any>;
@@ -48,7 +50,7 @@ class GamesListScreen extends React.Component<Props, State> {
     render() {
         const joinedServers = [];
         const unjoinedServers = [];
-        if (this.props.Games) {
+        if (this.props.Games !== undefined) {
             for (const game of Object.values(this.props.Games)) {
                 if (game.HasRequestingPlayer)
                     joinedServers.push(game);
@@ -65,6 +67,7 @@ class GamesListScreen extends React.Component<Props, State> {
                                                 onRefresh={this.handleRefreshGames}/>
                             }
                 >
+                    <ErrorComponent error={this.props.GamesError}/>
                     <List.Section title="Joined Games">
                         {joinedServers.map(game =>
                             <GameCard key={game.Id} game={game} handleGamePress={this.handleGamePress}/>
@@ -82,7 +85,6 @@ class GamesListScreen extends React.Component<Props, State> {
         else {
             return (<ActivityIndicator animating/>)
         }
-
     }
 }
 
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
 });
 
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: RootState) => {
     return {...state.gamesList};
 };
 

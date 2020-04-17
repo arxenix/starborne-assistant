@@ -48,6 +48,7 @@ class GameDrawerContent extends React.Component<Props, {}> {
                         )}
                         label="Station Manager"
                         active={this.props.activeItemKey==="GameStations"}
+                        //onPress={() => this.props.navigation.navigate("GameStations")}
                         onPress={() => {}}
                     />
                     <Drawer.Item

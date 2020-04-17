@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, Button, Theme, withTheme} from 'react-native-paper';
+import {ActivityIndicator, Button, Text, Theme, withTheme} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet, View} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
@@ -8,6 +8,7 @@ import {Header} from "../components/Header";
 import {fetchNotifications, markNotificationsAsRead} from "../redux/actions/GamesListActions";
 import {Notification} from "../components/Notification";
 import {sortNotificationsByMostRecent} from "../utils/notifications";
+import {ErrorComponent} from "../components/ErrorComponent";
 
 interface Props {
     route: any;
@@ -59,9 +60,9 @@ class GameNotificationsScreen extends React.Component<Props, State> {
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} title="Notifications"/>
-                {(this.props.game.Notifications===undefined) &&
+                <ErrorComponent error={this.props.game.NotificationsError}/>
+                {(this.props.game.Notifications===undefined && !this.props.game.NotificationsError) &&
                 <ActivityIndicator animating/>}
-
 
                 <ScrollView
                     refreshControl={

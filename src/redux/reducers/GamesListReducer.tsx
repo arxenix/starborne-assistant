@@ -1,9 +1,10 @@
 import {
+    CONNECTION_ERROR,
     ENTER_GAME,
     ESTABLISH_GAME_SERVER_CONNECTION,
     JOIN_GAME_SERVER,
-    UPDATE_GAMES_LIST,
-    UPDATE_NOTIFICATIONS, UPDATE_STATIONS
+    UPDATE_GAMES_LIST, UPDATE_GAMES_LIST_FAILURE, UPDATE_LAST_FETCH_DATE,
+    UPDATE_NOTIFICATIONS, UPDATE_NOTIFICATIONS_ERROR, UPDATE_STATIONS, UPDATE_STATIONS_ERROR
 } from "../actions/actions";
 import {ServerStatus} from "../../models/models";
 import {HubConnection} from "@microsoft/signalr";
@@ -13,6 +14,8 @@ import {Station} from "../../models/Station";
 
 export interface State {
     Games: {[Id: string]: Game};
+    GamesError?: string;
+    lastFetchedDate?: string;
 }
 
 export interface Game {
@@ -32,6 +35,10 @@ export interface Game {
     EnteredGame?: boolean;
     Notifications?: PersistentNotification[];
     Stations?: Station[];
+
+    ConnectionError?: string;
+    NotificationsError?: string;
+    StationsError?: string;
 }
 
 
@@ -59,6 +66,11 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     .map((g: Game) => ({[g.Id]: g}))
                     .reduce((acc: any, val: any) => ({...acc, ...val}), {})
             };
+        case UPDATE_GAMES_LIST_FAILURE:
+            return {
+                ...state,
+                GamesError: action.payload.error,
+            };
         case JOIN_GAME_SERVER:
             return {
                 ...state,
@@ -66,7 +78,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     ...state.Games,
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
-                        JoinInfo: action.payload.JoinInfo
+                        JoinInfo: action.payload.JoinInfo,
                     }
                 }
             };
@@ -77,7 +89,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     ...state.Games,
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
-                        HubConnection: action.payload.HubConnection
+                        HubConnection: action.payload.HubConnection,
                     }
                 }
             };
@@ -92,6 +104,17 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
+        case CONNECTION_ERROR:
+            return {
+                ...state,
+                Games: {
+                    ...state.Games,
+                    [action.payload.Id]: {
+                        ...state.Games[action.payload.Id],
+                        ConnectionError: action.payload.error,
+                    }
+                }
+            };
         case UPDATE_NOTIFICATIONS:
             return {
                 ...state,
@@ -103,6 +126,22 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
+        case UPDATE_NOTIFICATIONS_ERROR:
+            return {
+                ...state,
+                Games: {
+                    ...state.Games,
+                    [action.payload.Id]: {
+                        ...state.Games[action.payload.Id],
+                        NotificationsError: action.payload.error
+                    }
+                }
+            };
+        case UPDATE_LAST_FETCH_DATE:
+            return {
+                ...state,
+                lastFetchedDate: new Date().toString()
+            }
         case UPDATE_STATIONS:
             return {
                 ...state,
@@ -111,6 +150,17 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
                         Stations: action.payload.Stations
+                    }
+                }
+            };
+        case UPDATE_STATIONS_ERROR:
+            return {
+                ...state,
+                Games: {
+                    ...state.Games,
+                    [action.payload.Id]: {
+                        ...state.Games[action.payload.Id],
+                        StationsError: action.payload.error,
                     }
                 }
             };

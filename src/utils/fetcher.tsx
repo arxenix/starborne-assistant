@@ -15,6 +15,7 @@ import {
     sortNotificationsByMostRecent
 } from "./notifications";
 import {Notifications} from "expo";
+import {UPDATE_LAST_FETCH_DATE} from "../redux/actions/actions";
 
 const FETCH_TASK = "StarborneFetcher";
 
@@ -32,26 +33,34 @@ export default async function setupBackgroundTask() {
                         await store.dispatch(fetchNotifications(game.Id));
                         const notifications: PersistentNotification[] = await store.getState().gamesList.Games[game.Id].Notifications!!;
 
-                        if (notifications.length >= 5) {
-                            await Notifications.presentLocalNotificationAsync({
-                                title: `${game.Name} Notifications`,
-                                body: `You have ${notifications.length} unread notifications!`,
-                            });
-                        }
-                        else {
-                            sortNotificationsByMostRecent(notifications);
-                            for (const notification of notifications) {
-                                const notificationCategory = cleanNotificationCategory(notification.category);
-                                const notificationType = cleanNotificationType(notification.$type);
+                        const lastFetchedDateStr = store.getState().gamesList.lastFetchedDate;
+                        if (lastFetchedDateStr) {
+                            const lastFetchedDate = new Date(lastFetchedDateStr);
 
-                                const attrs = notifAttrs(notification);
-                                let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join("\n");
+                            const newNotifications = notifications.filter(n => new Date(n.dateCreated) > lastFetchedDate);
+
+                            if (newNotifications.length >= 5) {
                                 await Notifications.presentLocalNotificationAsync({
-                                    title: `${game.Name} - ${notificationType}`,
-                                    body: notifBody,
+                                    title: `${game.Name} Notifications`,
+                                    body: `You have ${newNotifications.length} new notifications!`,
                                 });
                             }
+                            else {
+                                sortNotificationsByMostRecent(notifications);
+                                for (const notification of newNotifications) {
+                                    const notificationCategory = cleanNotificationCategory(notification.category);
+                                    const notificationType = cleanNotificationType(notification.$type);
+
+                                    const attrs = notifAttrs(notification);
+                                    let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join("\n");
+                                    await Notifications.presentLocalNotificationAsync({
+                                        title: `${game.Name} - ${notificationType}`,
+                                        body: notifBody,
+                                    });
+                                }
+                            }
                         }
+                        store.dispatch({type: UPDATE_LAST_FETCH_DATE});
                     }
                 }
             }

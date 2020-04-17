@@ -6,7 +6,7 @@
       "ios",
       "android"
     ],
-    "version": "0.0.1",
+    "version": "0.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,12 +22,12 @@
     ],
     "ios": {
       "bundleIdentifier": "dev.arxenix.starborneassistant",
-      "buildNumber": "0.0.1",
+      "buildNumber": "0.0.2",
       "supportsTablet": true
     },
     "android": {
       "package": "dev.arxenix.starborneassistant",
-      "versionCode": 1
+      "versionCode": 2
     }
   }
 }
