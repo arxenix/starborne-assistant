@@ -11,9 +11,8 @@ import {
 } from "./actions";
 import {
     fetchJsonWithAccessToken,
-    fetchMsgPackWithAccessToken,
     fetchWithAccessToken,
-    getAccessToken, promiseWithTimeout
+    promiseWithTimeout
 } from "../../utils/api";
 import {Game, JoinInfo, State as GamesState} from "../reducers/GamesListReducer";
 import {encodeFormData} from "../../utils/utils";
@@ -24,8 +23,9 @@ import {ThunkAction, ThunkDispatch} from 'redux-thunk'
 import {RootState} from "../reducers";
 import {MarkNotificationAsReadBindingModel} from "../../models/notifications";
 import {deserializeStations} from "../../utils/serialization";
-import {decode, decodeAsync} from "@msgpack/msgpack";
+import {decode} from "@msgpack/msgpack";
 import * as b64 from "base64-js";
+import { navigate } from '../../../App';
 
 export function fetchGamesList(): ThunkAction<Promise<void>, {}, {}, AnyAction> {
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
@@ -65,8 +65,11 @@ export function establishGameConnection(gameId: number): ThunkAction<Promise<Hub
         const hubConnection = buildHubConnection(game.Server.Url + constants.GAME_ENDPOINTS.WEBSOCKET);
         hubConnection.onclose((err?: Error) => {
             console.log(`Closed connection to game server name: ${game.Name}, id: ${game.Id}, url: ${game.Server.Url}`);
-            if (err)
+            if (err) {
                 console.error(err);
+                dispatch({type: CONNECTION_ERROR, payload: "Connection error: "+err});
+                navigate("GamesList", {})
+            }
         });
 
         await hubConnection.start();

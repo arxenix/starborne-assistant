@@ -4,7 +4,7 @@ import LoginScreen from "./src/screens/LoginScreen";
 import {Provider} from "react-redux";
 import {store, persistor} from "./src/redux/store"
 import {PersistGate} from "redux-persist/integration/react";
-import {NavigationContainer, DarkTheme} from "@react-navigation/native";
+import {NavigationContainer, DarkTheme, NavigationContainerRef} from "@react-navigation/native";
 import { createStackNavigator } from '@react-navigation/stack';
 import GamesListScreen from "./src/screens/GamesListScreen";
 import GameScreen from "./src/screens/GameScreen";
@@ -12,6 +12,11 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import setupBackgroundTask from "./src/utils/fetcher";
 
 const Stack = createStackNavigator();
+const navigationRef = React.createRef<NavigationContainerRef>();
+
+export function navigate(name: string, params: any) {
+    navigationRef.current?.navigate(name, params);
+}
 
 setupBackgroundTask();
 
@@ -21,7 +26,7 @@ export default function Main() {
           <PersistGate persistor={persistor} loading={<ActivityIndicator animating={true}/>}>
               <PaperProvider theme={PaperDarkTheme}>
                   <SafeAreaProvider>
-                      <NavigationContainer theme={DarkTheme}>
+                      <NavigationContainer theme={DarkTheme} ref={navigationRef}>
                           <Stack.Navigator
                               initialRouteName="Login"
                               headerMode="none"
