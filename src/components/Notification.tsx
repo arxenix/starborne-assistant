@@ -2,7 +2,7 @@ import * as React from "react";
 import {PersistentNotification} from "../models/notifications";
 import {Avatar, Button, Card, DataTable} from "react-native-paper";
 import moment from "moment";
-import {cleanNotificationType, notifAttrs, notifIcon} from "../utils/notifications";
+import {cleanNotificationType, notifAttrs, notifIconColor} from "../utils/notifications";
 
 interface Props {
     notification: PersistentNotification;
@@ -42,12 +42,13 @@ export class Notification extends React.Component<Props, State> {
 
     render() {
         const date = new Date(this.props.notification.dateCreated);
+        const [icon, color] = notifIconColor(this.props.notification);
         return (
             <Card style={{margin: 10}}>
                 <Card.Title
                     title={cleanNotificationType(this.props.notification.$type)}
                     subtitle={`${date.toLocaleString()} (~${moment(date).fromNow()})`}
-                    left={(props: any) => <Avatar.Icon {...props} icon={notifIcon(this.props.notification)}/>}/>
+                    left={(props: any) => <Avatar.Icon {...props} icon={icon} color={color}/>}/>
                 <Card.Content>
                     <NotifData notification={this.props.notification}/>
                 </Card.Content>

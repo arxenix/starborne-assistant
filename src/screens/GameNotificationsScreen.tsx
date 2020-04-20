@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, Button, Text, Theme, withTheme} from 'react-native-paper';
+import {ActivityIndicator, Avatar, Button, Card, Text, Theme, withTheme, List, Colors} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet, View} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
@@ -7,8 +7,14 @@ import {DrawerNavigationProp} from "@react-navigation/drawer";
 import {Header} from "../components/Header";
 import {fetchNotifications, markNotificationsAsRead} from "../redux/actions/GamesListActions";
 import {Notification} from "../components/Notification";
-import {sortNotificationsByMostRecent} from "../utils/notifications";
+import {
+    cleanNotificationType,
+    separateSolarFlareNotifications,
+    sortNotificationsByMostRecent
+} from "../utils/notifications";
 import {ErrorComponent} from "../components/ErrorComponent";
+import {PersistentNotification} from "../models/notifications";
+import moment from "moment";
 
 interface Props {
     route: any;
@@ -34,7 +40,7 @@ class GameNotificationsScreen extends React.Component<Props, State> {
         await this.props.fetchNotifications(this.props.game.Id);
     }
 
-    handleRefreshGames = async () => {
+    handleRefresh = async () => {
         this.setState({refreshing: true});
         await this.props.fetchNotifications(this.props.game.Id);
         this.setState({refreshing: false})
@@ -54,8 +60,11 @@ class GameNotificationsScreen extends React.Component<Props, State> {
     };
 
     render() {
-        if (this.props.game.Notifications) {
+        let solarFlareNotifications: PersistentNotification[] = [];
+        let otherNotifications: PersistentNotification[] = [];
+        if (this.props.game.Notifications !== undefined) {
             sortNotificationsByMostRecent(this.props.game.Notifications);
+            [otherNotifications, solarFlareNotifications] = separateSolarFlareNotifications(this.props.game.Notifications);
         }
         return (
             <View style={styles.container}>
@@ -67,21 +76,35 @@ class GameNotificationsScreen extends React.Component<Props, State> {
                 <ScrollView
                     refreshControl={
                         <RefreshControl refreshing={this.state.refreshing}
-                                        onRefresh={this.handleRefreshGames}/>
+                                        onRefresh={this.handleRefresh}/>
                     }
                 >
                     {(this.props.game.Notifications!==undefined) &&
-                        <Button onPress={this.handleDismissAll}
-                                loading={this.state.dismissingAll}
-                                mode="contained"
-                                compact
-                        >
-                            Dismiss All ({this.props.game.Notifications.length})
-                        </Button>
-                    }
-                    {this.props.game.Notifications?.map(notif =>
-                        <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
-                    )}
+                    <Button onPress={() => this.handleDismissAll()}
+                            loading={this.state.dismissingAll}
+                            mode="contained"
+                            compact
+                    >
+                        Dismiss All ({this.props.game.Notifications.length})
+                    </Button>}
+
+
+                    <List.Accordion
+                        title="Solar Flare Notifications"
+                        left={props => <List.Icon {...props} icon="star"/>}
+                    >
+                        {solarFlareNotifications?.map(notif =>
+                            <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
+                        )}
+                    </List.Accordion>
+                    <List.Accordion
+                        title="Other Notifications"
+                        left={props => <List.Icon {...props} icon="alert-circle"/>}
+                    >
+                        {otherNotifications?.map(notif =>
+                            <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
+                        )}
+                    </List.Accordion>
                 </ScrollView>
             </View>
         );

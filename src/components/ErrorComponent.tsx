@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Text, Colors, Banner} from "react-native-paper";
+import {Text, Colors} from "react-native-paper";
 
 interface Props {
     error: any;

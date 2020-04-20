@@ -1,10 +1,10 @@
 import * as React from "react";
-import {List, ActivityIndicator, Button, Text, TextInput, Theme, withTheme, Headline} from 'react-native-paper';
-import {RefreshControl, ScrollView, StyleSheet, View} from "react-native";
+import {List, ActivityIndicator, Text, Theme, withTheme, Headline} from 'react-native-paper';
+import {RefreshControl, ScrollView, StyleSheet} from "react-native";
 import {Game, JoinInfo, State as GamesListState} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
 import GameCard from "../components/GameCard";
-import {enterGame, establishGameConnection, fetchGamesList, joinGameServer} from "../redux/actions/GamesListActions";
+import {fetchGamesList} from "../redux/actions/GamesListActions";
 import {HubConnection} from "@microsoft/signalr";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -57,17 +57,25 @@ class GamesListScreen extends React.Component<Props, State> {
                 else
                     unjoinedServers.push(game);
             }
+        }
 
-            return (
-                <SafeAreaView style={styles.container}>
-                    <Headline style={{alignSelf:"center"}}>Games List</Headline>
+        return (
+            <SafeAreaView style={styles.container}>
+                <Headline style={{alignSelf:"center"}}><Text>Games List</Text></Headline>
                 <ScrollView
                             refreshControl={
                                 <RefreshControl refreshing={this.state.refreshing}
                                                 onRefresh={this.handleRefreshGames}/>
                             }
                 >
+                    {(this.props.Games === undefined) && (this.props.GamesError !== undefined) &&
+                    <ActivityIndicator animating/>}
+
                     <ErrorComponent error={this.props.GamesError}/>
+
+                    {(this.props.Games) && Object.values(this.props.Games).map(game =>
+                    <ErrorComponent key={game.Id} error={game.ConnectionError}/>)}
+
                     <List.Section title="Joined Games">
                         {joinedServers.map(game =>
                             <GameCard key={game.Id} game={game} handleGamePress={this.handleGamePress}/>
@@ -79,12 +87,8 @@ class GamesListScreen extends React.Component<Props, State> {
                         )}
                     </List.Section>
                 </ScrollView>
-                </SafeAreaView>
-            );
-        }
-        else {
-            return (<ActivityIndicator animating/>)
-        }
+            </SafeAreaView>
+        );
     }
 }
 
@@ -99,4 +103,4 @@ const mapStateToProps = (state: RootState) => {
     return {...state.gamesList};
 };
 
-export default withTheme(connect(mapStateToProps, {fetchGamesList, joinGameServer, establishGameConnection, enterGame})(GamesListScreen));
+export default withTheme(connect(mapStateToProps, {fetchGamesList})(GamesListScreen));

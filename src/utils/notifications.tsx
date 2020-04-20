@@ -1,5 +1,6 @@
 import {PersistentNotification, PersistentNotificationCategory} from "../models/notifications";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
+import {Colors} from "react-native-paper";
 
 
 export function sortNotificationsByMostRecent(notifications: PersistentNotification[]) {
@@ -7,6 +8,20 @@ export function sortNotificationsByMostRecent(notifications: PersistentNotificat
     {
         return new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime();
     })
+}
+
+export function separateSolarFlareNotifications(notifications: PersistentNotification[]) {
+    const newNotifications = [];
+    const solarFlareNotifications = [];
+    for (const notification of notifications) {
+        if (notification.$type === PersistentNotificationType.SolarFlareDiscoveredNotification) {
+            solarFlareNotifications.push(notification);
+        }
+        else {
+            newNotifications.push(notification);
+        }
+    }
+    return [newNotifications, solarFlareNotifications];
 }
 
 export function cleanNotificationCategory(category: PersistentNotificationCategory) {
@@ -22,20 +37,29 @@ export function cleanNotificationType(typeStr: string) {
     return typeStr ? typeStr : "Unknown";
 }
 
-function notifIconFromCategory(category: PersistentNotificationCategory) {
+function notifIconColorFromCategory(category: PersistentNotificationCategory): [string, string?] {
+    let icon: string = "alert-circle";
+    let color: string | undefined = undefined;
     switch(category) {
         case PersistentNotificationCategory.Attacks:
-            return "rocket";
+            icon = "rocket";
+            color = Colors.red500;
+            break;
         case PersistentNotificationCategory.AllianceAndCoalition:
-            return "account-group";
+            icon = "account-group";
+            break;
         case PersistentNotificationCategory.Reports:
-            return "message-bulleted";
+            icon = "message-bulleted";
+            break;
         case PersistentNotificationCategory.PolicyResearch:
-            return "test-tube";
+            icon = "test-tube";
+            break;
         case PersistentNotificationCategory.DailyRewards:
         case PersistentNotificationCategory.ProgressRewards:
         case PersistentNotificationCategory.Achievements:
-            return "treasure-chest";
+            icon = "treasure-chest";
+            color = Colors.amber500;
+            break;
         case PersistentNotificationCategory.DailyChallenges:
         case PersistentNotificationCategory.TutorialSequence:
         case PersistentNotificationCategory.Tutorial:
@@ -46,18 +70,22 @@ function notifIconFromCategory(category: PersistentNotificationCategory) {
         case PersistentNotificationCategory.GlobalEvents:
         case PersistentNotificationCategory.Missions:
         default:
-            return "alert-circle";
+            icon = "alert-circle";
+            color = undefined;
+            break;
     }
+    return [icon, color];
 }
 
-export function notifIcon(notif: PersistentNotification) {
-    let icon = notifIconFromCategory(notif.category);
+export function notifIconColor(notif: PersistentNotification): [string, string?] {
+    let [icon, color] = notifIconColorFromCategory(notif.category);
     // special overrides
     switch (notif.$type) {
         case PersistentNotificationType.SolarFlareDiscoveredNotification:
         case PersistentNotificationType.SolarFlareExpiredNotification:
         case PersistentNotificationType.SolarFlareFinishedBySomeoneNotification:
             icon = "star";
+            color = Colors.yellow500;
             break;
         case PersistentNotificationType.OneOfYourStationsHasBeenSpiedNotification:
             icon = "sunglasses";
@@ -65,7 +93,7 @@ export function notifIcon(notif: PersistentNotification) {
         default:
             break;
     }
-    return icon;
+    return [icon, color];
 }
 
 export function notifAttrs(notification: PersistentNotification): [string, string][] {
@@ -78,15 +106,15 @@ export function notifAttrs(notification: PersistentNotification): [string, strin
         }
         else if (val.hasOwnProperty("$type")){
             if (val["$type"] === "HexIndex") {
-                attrs.push([key, `[${val.q}, ${val.r}]`])
+                attrs.push([key, `[${val.q}, ${val.r}]`]);
             }
             else {
-                attrs.push([key, JSON.stringify(val)])
+                attrs.push([key, JSON.stringify(val)]);
             }
         }
         else if (blackList.indexOf(key) === -1) {
-            attrs.push([key, JSON.stringify(val)])
+            attrs.push([key, JSON.stringify(val)]);
         }
     }
-    return attrs
+    return attrs;
 }

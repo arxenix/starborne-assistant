@@ -7,15 +7,16 @@ import {
     joinEstablishAndEnterGame,
     fetchNotifications,
 } from "../redux/actions/GamesListActions";
-import {PersistentNotification, PersistentNotificationCategory} from "../models/notifications";
+import {PersistentNotification} from "../models/notifications";
 import {
     cleanNotificationCategory,
     cleanNotificationType,
-    notifAttrs,
+    notifAttrs, notifIconColor, separateSolarFlareNotifications,
     sortNotificationsByMostRecent
 } from "./notifications";
 import {Notifications} from "expo";
 import {UPDATE_LAST_FETCH_DATE} from "../redux/actions/actions";
+import {Colors} from "react-native-paper";
 
 const FETCH_TASK = "StarborneFetcher";
 
@@ -37,7 +38,20 @@ export default async function setupBackgroundTask() {
                         if (lastFetchedDateStr) {
                             const lastFetchedDate = new Date(lastFetchedDateStr);
 
-                            const newNotifications = notifications.filter(n => new Date(n.dateCreated) > lastFetchedDate);
+                            const filteredNotifications = notifications.filter(n => new Date(n.dateCreated) > lastFetchedDate);
+                            const [newNotifications, solarFlareNotifications] = separateSolarFlareNotifications(filteredNotifications);
+
+                            const solarFlareBody = solarFlareNotifications.map((n: any) => `[${n.position.q}, ${n.position.r}],`).join("\n");
+                            if (solarFlareNotifications) {
+                                await Notifications.presentLocalNotificationAsync({
+                                    title: `${game.Name} - ${solarFlareNotifications.length} Solar Flares Discovered`,
+                                    body: solarFlareBody,
+                                    android: {
+                                        icon: "star",
+                                        color: Colors.yellow500,
+                                    }
+                                });
+                            }
 
                             if (newNotifications.length >= 5) {
                                 await Notifications.presentLocalNotificationAsync({
@@ -50,12 +64,17 @@ export default async function setupBackgroundTask() {
                                 for (const notification of newNotifications) {
                                     const notificationCategory = cleanNotificationCategory(notification.category);
                                     const notificationType = cleanNotificationType(notification.$type);
+                                    const [icon, color] = notifIconColor(notification);
 
                                     const attrs = notifAttrs(notification);
-                                    let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join("\n");
+                                    let notifBody = attrs.map(a => `${a[0]}: ${a[1]},`).join("\n");
                                     await Notifications.presentLocalNotificationAsync({
                                         title: `${game.Name} - ${notificationType}`,
                                         body: notifBody,
+                                        android: {
+                                            //icon: "",
+                                            color: color
+                                        }
                                     });
                                 }
                             }
