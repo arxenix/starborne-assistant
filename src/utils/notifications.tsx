@@ -11,14 +11,14 @@ export function sortNotificationsByMostRecent(notifications: PersistentNotificat
 
 export function cleanNotificationCategory(category: PersistentNotificationCategory) {
     let categoryStr = PersistentNotificationCategory[category];
-    categoryStr = categoryStr?.replace(/([A-Z]+)/g, " $1")?.trim()
+    categoryStr = categoryStr?.replace(/([A-Z])/g, " $1")?.trim();
     return categoryStr ? categoryStr : "Unknown";
 }
 
 export function cleanNotificationType(typeStr: string) {
     typeStr = typeStr.split(",")[0].split(".").slice(-1)[0];
     typeStr = typeStr.replace("Notification", "");
-    typeStr = typeStr.replace(/([A-Z]+)/g, ' $1').trim()
+    typeStr = typeStr.replace(/([A-Z])/g, " $1").trim();
     return typeStr ? typeStr : "Unknown";
 }
 

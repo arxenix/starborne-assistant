@@ -46,7 +46,7 @@ export default async function setupBackgroundTask() {
                                 });
                             }
                             else {
-                                sortNotificationsByMostRecent(notifications);
+                                sortNotificationsByMostRecent(newNotifications);
                                 for (const notification of newNotifications) {
                                     const notificationCategory = cleanNotificationCategory(notification.category);
                                     const notificationType = cleanNotificationType(notification.$type);
