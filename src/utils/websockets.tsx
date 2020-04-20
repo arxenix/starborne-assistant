@@ -10,9 +10,7 @@ import {
     JsonHubProtocol,
     LogLevel
 } from "@microsoft/signalr";
-import constants from "../config/constants";
 import {getAccessToken} from "./api";
-
 global.Buffer = Buffer;
 
 
@@ -41,23 +39,6 @@ export class ConsoleLogger implements ILogger {
     log(level: LogLevel, message: string): void {
         console.debug(`WebSocket Log [${LogLevel[level]}] ${message}`);
     }
-}
-
-
-export function connectWebSocket(url: string) {
-    const hubConnection = buildHubConnection(url);
-    hubConnection.start()
-        .then(() => {
-        })
-        .catch((r: any) => {
-            console.error("FAILED TO CONNECT TO WS! :(");
-            console.error(r);
-        });
-
-    hubConnection.onclose((err?:Error) =>  {
-        console.error("WEBSOCKET CLOSED!");
-        console.error(err);
-    });
 }
 
 export function buildHubConnection(url: string): HubConnection {
