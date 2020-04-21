@@ -11,6 +11,7 @@ import GameDetailsScreen from "./GameDetailsScreen";
 import {SafeAreaView} from "react-native-safe-area-context";
 import GameNotificationsScreen from "./GameNotificationsScreen";
 import GameStationsScreen from "./GameStationsScreen";
+import NotificationSettingsScreen from "./NotificationSettingsScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -46,7 +47,6 @@ class GameScreen extends React.Component<Props, State> {
     }
 
     render() {
-        if (this.props.game.EnteredGame)
         return (
             <Drawer.Navigator
                 initialRouteName="GameDetails"
@@ -56,12 +56,8 @@ class GameScreen extends React.Component<Props, State> {
                 <Drawer.Screen name="GameDetails" component={GameDetailsScreen} initialParams={{gameId: this.props.game.Id}}/>
                 <Drawer.Screen name="GameNotifications" component={GameNotificationsScreen} initialParams={{gameId: this.props.game.Id}}/>
                 <Drawer.Screen name="GameStations" component={GameStationsScreen} initialParams={{gameId: this.props.game.Id}}/>
+                <Drawer.Screen name="NotificationSettings" component={NotificationSettingsScreen} initialParams={{gameId: this.props.game.Id}}/>
             </Drawer.Navigator>
-        );
-        else return (
-            <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-                <ActivityIndicator animating size="large"/>
-            </SafeAreaView>
         );
     }
 }

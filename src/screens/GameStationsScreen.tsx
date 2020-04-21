@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, Theme, withTheme} from 'react-native-paper';
+import {ActivityIndicator, Text, Theme, withTheme} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet, View} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
@@ -8,6 +8,7 @@ import {Header} from "../components/Header";
 import {fetchStations} from "../redux/actions/GamesListActions";
 import { StationComponent } from "../components/StationComponent";
 import {ErrorComponent} from "../components/ErrorComponent";
+import {Station} from "../models/Station";
 
 interface Props {
     route: any;
@@ -37,11 +38,19 @@ class GameStationsScreen extends React.Component<Props, State> {
     };
 
     render() {
+        let myStations: Station[] = [];
+        if (this.props.game.Stations !== undefined) {
+            myStations = this.props.game.Stations.filter(s => s.EmpireId === this.props.game.GameInfo!.myEmpireId);
+        }
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} title="Stations"/>
                 {(this.props.game.Stations===undefined) &&
                 <ActivityIndicator animating/>}
+
+                {(this.props.game.Stations===undefined) &&
+                <Text>Stations can take up to 30 seconds to load...</Text>}
+
                 <ScrollView
                     refreshControl={
                         <RefreshControl refreshing={this.state.refreshing}
@@ -49,7 +58,7 @@ class GameStationsScreen extends React.Component<Props, State> {
                     }
                 >
                     <ErrorComponent error={this.props.game.StationsError}/>
-                    {this.props.game.Stations?.map(station =>
+                    {myStations.map(station =>
                         <StationComponent key={station.Id} station={station}/>
                     )}
                 </ScrollView>

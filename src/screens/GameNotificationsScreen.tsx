@@ -90,7 +90,7 @@ class GameNotificationsScreen extends React.Component<Props, State> {
 
 
                     <List.Accordion
-                        title="Solar Flare Notifications"
+                        title={`Solar Flare Notifications (${solarFlareNotifications.length})`}
                         left={props => <List.Icon {...props} icon="star"/>}
                     >
                         {solarFlareNotifications?.map(notif =>
@@ -98,7 +98,7 @@ class GameNotificationsScreen extends React.Component<Props, State> {
                         )}
                     </List.Accordion>
                     <List.Accordion
-                        title="Other Notifications"
+                        title={`Other Notifications (${otherNotifications.length})`}
                         left={props => <List.Icon {...props} icon="alert-circle"/>}
                     >
                         {otherNotifications?.map(notif =>

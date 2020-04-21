@@ -16,19 +16,23 @@ interface Props {
 
 class GameDetailsScreen extends React.Component<Props, {}> {
     render() {
+        let content = <ActivityIndicator animating/>;
         if (this.props.game.EnteredGame) {
             const [daysIn, totalDays] = getGameProgress(new Date(this.props.game.DateStarted), new Date(this.props.game.DateEnding));
-            return (
-                <View style={styles.container}>
-                    <Header navigation={this.props.navigation} title="Game Overview"/>
-                    <Text>GameId: {this.props.game.Id}</Text>
-                    <Text>Name: {this.props.game.Name}</Text>
-                    <Text>Day: {daysIn}/{totalDays}</Text>
-                    <ProgressBar progress={daysIn/totalDays}/>
-                </View>
-            );
+            content = <>
+                <Text>GameId: {this.props.game.Id}</Text>
+                <Text>Name: {this.props.game.Name}</Text>
+                <Text>Day: {daysIn}/{totalDays}</Text>
+                <ProgressBar progress={daysIn/totalDays}/>
+                <Text>EmpireId: {this.props.game.GameInfo!.myEmpireId}</Text>
+            </>
         }
-        else return (<ActivityIndicator animating/>);
+        return (
+            <View style={styles.container}>
+                <Header navigation={this.props.navigation} title="Game Overview"/>
+                {content}
+            </View>
+        );
     }
 }
 

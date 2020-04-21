@@ -4,7 +4,7 @@ import {
     CONNECTION_ERROR,
     ENTER_GAME,
     ESTABLISH_GAME_SERVER_CONNECTION,
-    JOIN_GAME_SERVER,
+    JOIN_GAME_SERVER, SET_NOTIFICATION_TYPE_ENABLED, SET_NOTIFICATIONS_ENABLED,
     UPDATE_GAMES_LIST, UPDATE_GAMES_LIST_FAILURE,
     UPDATE_NOTIFICATIONS, UPDATE_NOTIFICATIONS_ERROR,
     UPDATE_STATIONS, UPDATE_STATIONS_ERROR
@@ -25,7 +25,7 @@ import {MarkNotificationAsReadBindingModel} from "../../models/notifications";
 import {deserializeStations} from "../../utils/serialization";
 import {decode} from "@msgpack/msgpack";
 import * as b64 from "base64-js";
-import { navigate } from '../../../App';
+import { navigate } from '../../NavigationContainer';
 
 export function fetchGamesList(): ThunkAction<Promise<void>, {}, {}, AnyAction> {
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
@@ -67,9 +67,9 @@ export function establishGameConnection(gameId: number): ThunkAction<Promise<Hub
             console.log(`Closed connection to game server name: ${game.Name}, id: ${game.Id}, url: ${game.Server.Url}`);
             if (err) {
                 console.error(err);
-                dispatch({type: CONNECTION_ERROR, payload: "Connection error: "+err});
-                navigate("GamesList", {})
             }
+            dispatch({type: CONNECTION_ERROR, payload: "Connection closed "+err});
+            navigate("GamesList", {})
         });
 
         await hubConnection.start();
@@ -83,15 +83,23 @@ export function enterGame(gameId: number): ThunkAction<Promise<void>, RootState,
     return async (dispatch: ThunkDispatch<RootState, {}, AnyAction>, getState) => {
         const game: Game = getState().gamesList.Games[gameId.toString()];
         const r = await InvokeEnterGame(game.HubConnection!!, {
-                ...game.JoinInfo!!,
-                IsBot: false,
-                VersionValue: constants.VERSION_VALUE,
-                PlayerJoinRole: RoleType.User,
-                ClientType: ClientType.Game
-            });
-        console.debug("ENTERED GAME!");
+            ...game.JoinInfo!!,
+            IsBot: false,
+            VersionValue: constants.VERSION_VALUE,
+            PlayerJoinRole: RoleType.User,
+            ClientType: ClientType.Game
+        }) as any;
+        if (!r.isSuccess)
+            throw new Error("EnterGame failure");
+        console.debug("ENTERED GAME");
         console.debug(r);
-        dispatch({type: ENTER_GAME, payload: {Id: game.Id}})
+
+        const r2 = await InvokeGetGameInfo(game.HubConnection!!) as any;
+        console.debug("GAME INFO");
+        console.debug(r2);
+        if (!r2.isSuccess)
+            throw new Error("GetGameInfo failure");
+        dispatch({type: ENTER_GAME, payload: {Id: game.Id, GameInfo: r2.content}})
     }
 }
 
@@ -105,7 +113,8 @@ export function joinEstablishAndEnterGame(gameId: number): ThunkAction<Promise<v
         }
         catch(err) {
             console.error(err);
-            dispatch({type: CONNECTION_ERROR, payload: {Id: gameId, error: "Failed to connect - "+err}});
+            dispatch({type: CONNECTION_ERROR, payload: {Id: gameId, error: `Failed to connect to server ${gameId} - ${err}`}});
+            navigate("GamesList", {})
         }
     }
 }
@@ -142,16 +151,17 @@ export function markNotificationsAsRead(gameId: number, notificationIds: number[
     }
 }
 
-function base64ToArrayBuffer(base64: string) {
-    const binary_string = window.atob(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binary_string.charCodeAt(i);
+export function setNotificationTypeEnabled(gameId: number, notificationType: string, enabled: boolean): ThunkAction<Promise<void>, {}, {}, AnyAction> {
+    return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+        dispatch({type: SET_NOTIFICATION_TYPE_ENABLED, payload: {Id: gameId, type: notificationType, enabled: enabled}});
     }
-    return bytes.buffer;
 }
 
+export function setNotificationsEnabled(gameId: number, enabled: boolean): ThunkAction<Promise<void>, {}, {}, AnyAction> {
+    return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+        dispatch({type: SET_NOTIFICATIONS_ENABLED, payload: {Id: gameId, enabled: enabled}});
+    }
+}
 
 export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootState, {}, AnyAction> {
     return async (dispatch: ThunkDispatch<RootState, {}, AnyAction>, getState) => {
@@ -163,7 +173,6 @@ export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootSt
                 game.Server.Url + constants.GAME_ENDPOINTS.STATIONS, {
                     method: "POST"
                 });
-
              */
             const blob = await promiseWithTimeout(fetchWithAccessToken(game.Server.Url + constants.GAME_ENDPOINTS.STATIONS, {
                 headers: {
@@ -175,26 +184,6 @@ export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootSt
                 return r.blob();
             }), 20000);
             console.log("got blob");
-            /*
-            const accessToken = await getAccessToken();
-            const blob = await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.onload = function() {
-                    console.log("loaded blob!");
-                    //console.log(xhr);
-                    //console.log(xhr.response);
-                    resolve(xhr.response);
-                };
-                xhr.onerror = function() {
-                    reject(new Error('Network request failed'));
-                };
-                xhr.responseType = 'blob';
-                xhr.open('GET', game.Server.Url + constants.GAME_ENDPOINTS.STATIONS, true);
-                xhr.setRequestHeader("Authorization", "Bearer "+accessToken);
-                xhr.setRequestHeader("Content-Type", "application/x-msgpack");
-                xhr.send(null);
-            }) as Blob;
-             */
             const dataURI = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -210,18 +199,22 @@ export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootSt
                 console.log("Starting blob read");
                 reader.readAsDataURL(blob);
             }) as string;
-            //data:application/octet-stream;base64,AAAAA
+            const prefix = "data:application/octet-stream;base64,";
+            console.log(dataURI.length);
             console.log(dataURI.slice(0, 100));
-            console.log(dataURI.slice("data:application/octet-stream;base64,".length, 100));
-            const base64 = dataURI.slice("data:application/octet-stream;base64,".length);
+            const base64 = dataURI.slice(prefix.length, dataURI.length);
+            console.log(base64.length);
             const byteArray = b64.toByteArray(base64);
+            console.log(byteArray.length);
             const r = decode(byteArray.buffer) as any;
+            console.log("decoded!");
 
-            console.log("fetchStations result:");
-            console.log(r);
+            if (r.HasErrors) {
+                throw new Error(r.Error);
+            }
             const stations = deserializeStations(r.Content);
             console.log("deserialized");
-            console.log(stations);
+            console.log(stations.length);
             dispatch({type: UPDATE_STATIONS, payload: {Id: game.Id, Stations: stations}});
         }
         catch(err) {
@@ -237,6 +230,10 @@ export function InvokeMarkNotificationAsRead(connection: HubConnection, model: M
 
 export function InvokeEnterGame<T>(connection: HubConnection, model: EnterGameModel) {
     return connection.invoke<T>("EnterGame", model);
+}
+
+export function InvokeGetGameInfo<T>(connection: HubConnection) {
+    return connection.invoke<T>("GetGameInfo");
 }
 
 export function InvokeGetNotifications<T>(connection: HubConnection) {

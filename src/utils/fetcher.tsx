@@ -17,6 +17,8 @@ import {
 import {Notifications} from "expo";
 import {UPDATE_LAST_FETCH_DATE} from "../redux/actions/actions";
 import {Colors} from "react-native-paper";
+import {GameSettings} from "../redux/reducers/GamesListReducer";
+import {PersistentNotificationType} from "../models/PersistentNotificationType";
 
 const FETCH_TASK = "StarborneFetcher";
 
@@ -28,8 +30,14 @@ export default async function setupBackgroundTask() {
                 await store.dispatch(login(user!!, password!!));
                 await store.dispatch(fetchGamesList());
 
+                const GamesSettings = store.getState().gamesList.GamesSettings;
+
                 for (const game of Object.values(store.getState().gamesList.Games)) {
                     if (game.HasRequestingPlayer) {
+                        const GameSettings = GamesSettings[game.Id] as GameSettings;
+                        if (!GameSettings.notificationsEnabled)
+                            break;
+
                         await store.dispatch(joinEstablishAndEnterGame(game.Id));
                         await store.dispatch(fetchNotifications(game.Id));
                         const notifications: PersistentNotification[] = await store.getState().gamesList.Games[game.Id].Notifications!!;
@@ -41,10 +49,12 @@ export default async function setupBackgroundTask() {
                             const filteredNotifications = notifications.filter(n => new Date(n.dateCreated) > lastFetchedDate);
                             const [newNotifications, solarFlareNotifications] = separateSolarFlareNotifications(filteredNotifications);
 
-                            const solarFlareBody = solarFlareNotifications.map((n: any) => `[${n.position.q}, ${n.position.r}],`).join("\n");
-                            if (solarFlareNotifications) {
+                            const solarFlareBody = solarFlareNotifications.map((n: any) => `[${n.position.q}, ${n.position.r}]`).join(",\n");
+                            if (solarFlareNotifications && solarFlareNotifications.length > 0 &&
+                                !GameSettings.disabledNotificationTypes.includes(PersistentNotificationType.SolarFlareDiscoveredNotification)) {
+
                                 await Notifications.presentLocalNotificationAsync({
-                                    title: `${game.Name} - ${solarFlareNotifications.length} Solar Flares Discovered`,
+                                    title: `${game.Name} - ${solarFlareNotifications.length} Solar Flare${solarFlareNotifications.length > 0 ? "s" : ""} Discovered`,
                                     body: solarFlareBody,
                                     android: {
                                         icon: "star",
@@ -62,6 +72,9 @@ export default async function setupBackgroundTask() {
                             else {
                                 sortNotificationsByMostRecent(newNotifications);
                                 for (const notification of newNotifications) {
+                                    if (GameSettings.disabledNotificationTypes.includes(notification.$type))
+                                        continue;
+
                                     const notificationCategory = cleanNotificationCategory(notification.category);
                                     const notificationType = cleanNotificationType(notification.$type);
                                     const [icon, color] = notifIconColor(notification);

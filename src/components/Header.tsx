@@ -12,12 +12,18 @@ export const Header = (props: Props) => {
         <Appbar.Header>
             <Appbar.Action
                 icon="menu"
-                onPress={/* TODO - proper logout... */ () =>
+                onPress={() =>
                     props.navigation.openDrawer()
                 }
             />
             <Appbar.Content
                 title={props.title}
+            />
+            <Appbar.Action
+                icon="settings"
+                onPress={() =>
+                    props.navigation.navigate("NotificationSettings")
+                }
             />
             <Appbar.Action
                 icon="logout"

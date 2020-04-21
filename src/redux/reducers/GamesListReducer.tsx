@@ -2,11 +2,11 @@ import {
     CONNECTION_ERROR,
     ENTER_GAME,
     ESTABLISH_GAME_SERVER_CONNECTION,
-    JOIN_GAME_SERVER,
+    JOIN_GAME_SERVER, SET_NOTIFICATION_TYPE_ENABLED, SET_NOTIFICATIONS_ENABLED,
     UPDATE_GAMES_LIST, UPDATE_GAMES_LIST_FAILURE, UPDATE_LAST_FETCH_DATE,
     UPDATE_NOTIFICATIONS, UPDATE_NOTIFICATIONS_ERROR, UPDATE_STATIONS, UPDATE_STATIONS_ERROR
 } from "../actions/actions";
-import {ServerStatus} from "../../models/models";
+import {GameInfo, ServerStatus} from "../../models/models";
 import {HubConnection} from "@microsoft/signalr";
 import {PersistentNotification} from "../../models/notifications";
 import {AnyAction} from "redux";
@@ -16,6 +16,7 @@ export interface State {
     Games: {[Id: string]: Game};
     GamesError?: string;
     lastFetchedDate?: string;
+    GamesSettings: {[Id: string]: GameSettings};
 }
 
 export interface Game {
@@ -33,12 +34,18 @@ export interface Game {
     JoinInfo?: JoinInfo;
     HubConnection?: HubConnection;
     EnteredGame?: boolean;
+    GameInfo?: GameInfo;
     Notifications?: PersistentNotification[];
     Stations?: Station[];
 
     ConnectionError?: string;
     NotificationsError?: string;
     StationsError?: string;
+}
+
+export interface GameSettings {
+    notificationsEnabled: boolean;
+    disabledNotificationTypes: string[];
 }
 
 
@@ -54,17 +61,30 @@ export interface GameServer {
 
 const INITIAL_STATE = {
     Games: {},
+    GamesSettings: {}
 };
 
 export default (state: State = INITIAL_STATE, action: AnyAction) => {
     switch (action.type) {
         case UPDATE_GAMES_LIST:
+            let newGamesSettings = state.GamesSettings;
+            action.payload.forEach((g: Game) => {
+                if (!state.GamesSettings.hasOwnProperty(g.Id)) {
+                    newGamesSettings[g.Id] = {
+                        notificationsEnabled: true,
+                        disabledNotificationTypes: []
+                    }
+                }
+            })
+
             return {
                 ...state,
                 // map list of games into {gameId: game} dict
                 Games: action.payload
                     .map((g: Game) => ({[g.Id]: g}))
-                    .reduce((acc: any, val: any) => ({...acc, ...val}), {})
+                    .reduce((acc: any, val: any) => ({...acc, ...val}), {}),
+
+                GamesSettings: newGamesSettings
             };
         case UPDATE_GAMES_LIST_FAILURE:
             return {
@@ -101,6 +121,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
                         EnteredGame: true,
+                        GameInfo: action.payload.GameInfo
                     }
                 }
             };
@@ -161,6 +182,34 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     [action.payload.Id]: {
                         ...state.Games[action.payload.Id],
                         StationsError: action.payload.error,
+                    }
+                }
+            };
+        case SET_NOTIFICATIONS_ENABLED:
+            return {
+                ...state,
+                GamesSettings: {
+                    ...state.GamesSettings,
+                    [action.payload.Id]: {
+                        ...state.GamesSettings[action.payload.Id],
+                        notificationsEnabled: action.payload.enabled
+                    }
+                }
+            };
+        case SET_NOTIFICATION_TYPE_ENABLED:
+            let newDisabledNotificationTypes = state.GamesSettings[action.payload.Id].disabledNotificationTypes;
+            newDisabledNotificationTypes = newDisabledNotificationTypes.filter(t => t!==action.payload.type);
+            if (!action.payload.enabled) {
+                newDisabledNotificationTypes.push(action.payload.type);
+            }
+
+            return {
+                ...state,
+                GamesSettings: {
+                    ...state.GamesSettings,
+                    [action.payload.Id]: {
+                        ...state.GamesSettings[action.payload.Id],
+                        disabledNotificationTypes: newDisabledNotificationTypes
                     }
                 }
             };

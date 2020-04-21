@@ -100,3 +100,29 @@ export interface GameActionResult {
     Message: string;
     IsSuccess: boolean;
 }
+
+/*
+"allianceLockInDaysBeforeEndDate": 21,
+    "coalitionLockInDaysBeforeEndDate": 21,
+    "gameDurationDays": 70,
+    "gameEndDate": "2020-06-11T13:00:37.925Z",
+    "gameId": 98,
+    "myEmpireId": 3117,
+    "serverPolicies": Object {
+      "$type": "Starborne.Commons.Rules.ServerPolicies, Starborne.Server",
+      "allowAccountSpecifics": true,
+      "allowBlueprintFragmentBreakdown": true,
+      "allowMonetaryTransactions": true,
+      "allowPlatPurchase": true,
+      "serverType": 0,
+      "tournament": Object {
+        "$type": "Starborne.Commons.Rules.ServerTournamentPolicy, Starborne.Server",
+        "isRestrictAccessToEstablishedOrPremiumPlayersOnly": false,
+        "timeUntilKickedOutIfNotEligible": "00:30:00",
+      },
+    },
+    "serverStartTime": "2020-04-02T13:00:37.925Z",
+ */
+export interface GameInfo {
+    myEmpireId: number;
+}

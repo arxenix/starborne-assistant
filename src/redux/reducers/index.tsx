@@ -38,7 +38,7 @@ const authPersistConfig = {
 
 const gamesListPersistConfig = {
     //whitelist: ["Games"],
-    whitelist: ["lastFetchedDate"],
+    whitelist: ["lastFetchedDate", "GamesSettings"],
     key: "games",
     storage
 };

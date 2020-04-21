@@ -68,6 +68,14 @@ function deserializeStation(data: any): Station {
 }
 
 export function deserializeStations(data: any[]): Station[] {
+    console.log(data.length);
+    /*
+    const stations: Station[] = [];
+    for (let i=0; i<100;i++) {
+        stations.push(deserializeStation(data[i]));
+    }
+    return stations;
+    */
     return data.map(d => deserializeStation(d))
 }
 
