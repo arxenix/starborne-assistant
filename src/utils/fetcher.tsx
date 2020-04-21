@@ -52,7 +52,7 @@ export default async function setupBackgroundTask() {
                                 !GameSettings.disabledNotificationTypes.includes(PersistentNotificationType.SolarFlareDiscoveredNotification)) {
 
                                 await Notifications.presentLocalNotificationAsync({
-                                    title: `${game.Name} - ${solarFlareNotifications.length} Solar Flare${solarFlareNotifications.length > 0 ? "s" : ""} Discovered`,
+                                    title: `${game.Name} - ${solarFlareNotifications.length} Solar Flare${solarFlareNotifications.length > 1 ? "s" : ""} Discovered`,
                                     body: solarFlareBody,
                                     android: {
                                         icon: "star",
