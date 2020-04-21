@@ -1,7 +1,6 @@
 import * as React from "react";
-import {Avatar, Card, DataTable, Text, Chip, Title} from "react-native-paper";
+import {Avatar, Card, DataTable, Chip, Title} from "react-native-paper";
 import {Station} from "../models/Station";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {View} from "react-native";
 
 interface Props {
