@@ -13,6 +13,7 @@ interface State {
 export class StationComponent extends React.Component<Props, State> {
     readonly state = {
     }
+    //TODO - extrapolate resources and update every minute?
 
     render() {
         const resources = this.props.station.ResourceHandler.r;
