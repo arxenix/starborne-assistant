@@ -2,16 +2,14 @@ import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import {store} from '../redux/store'
 import {login} from "../redux/actions/AuthActions";
-import {
-    fetchGamesList,
-    joinEstablishAndEnterGame,
-    fetchNotifications,
-} from "../redux/actions/GamesListActions";
+import {fetchGamesList, fetchNotifications, joinEstablishAndEnterGame,} from "../redux/actions/GamesListActions";
 import {PersistentNotification} from "../models/notifications";
 import {
     cleanNotificationCategory,
     cleanNotificationType,
-    notifAttrs, notifIconColor, separateSolarFlareNotifications,
+    notifAttrs,
+    notifIconColor,
+    separateSolarFlareNotifications,
     sortNotificationsByMostRecent
 } from "./notifications";
 import {Notifications} from "expo";
@@ -68,8 +66,7 @@ export default async function setupBackgroundTask() {
                                     title: `${game.Name} Notifications`,
                                     body: `You have ${newNotifications.length} new notifications!`,
                                 });
-                            }
-                            else {
+                            } else {
                                 sortNotificationsByMostRecent(newNotifications);
                                 for (const notification of newNotifications) {
                                     if (GameSettings.disabledNotificationTypes.includes(notification.$type))
@@ -80,7 +77,7 @@ export default async function setupBackgroundTask() {
                                     const [icon, color] = notifIconColor(notification);
 
                                     const attrs = notifAttrs(notification);
-                                    let notifBody = attrs.map(a => `${a[0]}: ${a[1]},`).join("\n");
+                                    let notifBody = attrs.map(a => `${a[0]}: ${a[1]}`).join(",\n");
                                     await Notifications.presentLocalNotificationAsync({
                                         title: `${game.Name} - ${notificationType}`,
                                         body: notifBody,
@@ -95,8 +92,7 @@ export default async function setupBackgroundTask() {
                         store.dispatch({type: UPDATE_LAST_FETCH_DATE});
                     }
                 }
-            }
-            else {
+            } else {
                 return BackgroundFetch.Result.Failed;
             }
             //return receivedNewData ? BackgroundFetch.Result.NewData : BackgroundFetch.Result.NoData;
@@ -107,11 +103,11 @@ export default async function setupBackgroundTask() {
     });
     const status = await BackgroundFetch.getStatusAsync();
     if (status === BackgroundFetch.Status.Available) {
-        await BackgroundFetch.setMinimumIntervalAsync(15*60)
+        await BackgroundFetch.setMinimumIntervalAsync(15 * 60);
         await BackgroundFetch.registerTaskAsync(FETCH_TASK, {
-            minimumInterval: 15*60,
+            minimumInterval: 15 * 60,
             stopOnTerminate: false,
             startOnBoot: true
-        })
+        });
     }
 }
