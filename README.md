@@ -14,7 +14,7 @@ The best way to contact me with questions is through the discord server for the 
   - A: There is none, I reverse-engineered the game client using [dnSpy](https://github.com/0xd4d/dnSpy).
  
 # Bug reports / Feature requests
-Open up a new github issue!
+Open up a new [github issue](https://github.com/arxenix/starborne-assistant/issues/new)!
 
 # Contributing
-I'd love some help developing this app, if you have any experience with react/react-native, please reach out.
+I'd love some help developing this app, if you have any experience with react/react-native, please reach out to me on discord.
