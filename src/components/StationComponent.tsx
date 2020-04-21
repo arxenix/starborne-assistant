@@ -33,9 +33,9 @@ export class StationComponent extends React.Component<Props, State> {
                     </View>
                     <Title>Production</Title>
                     <View style={{flexDirection: "row"}}>
-                        <Chip icon="square">{production.Metals}</Chip>
-                        <Chip icon="cloud">{production.Gases}</Chip>
-                        <Chip icon="diamond-stone">{production.Crystals}</Chip>
+                        <Chip icon="square">{production.Metals}/hr</Chip>
+                        <Chip icon="cloud">{production.Gases}/hr</Chip>
+                        <Chip icon="diamond-stone">{production.Crystals}/hr</Chip>
                     </View>
                    <DataTable>
                         <DataTable.Row>
