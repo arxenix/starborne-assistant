@@ -11,7 +11,6 @@ import {
 } from "./actions";
 import {
     fetchJsonWithAccessToken, fetchMsgPackWithAccessToken,
-    fetchWithAccessToken,
     promiseWithTimeout
 } from "../../utils/api";
 import {Game, JoinInfo, State as GamesState} from "../reducers/GamesListReducer";
@@ -23,8 +22,6 @@ import {ThunkAction, ThunkDispatch} from 'redux-thunk'
 import {RootState} from "../reducers";
 import {MarkNotificationAsReadBindingModel} from "../../models/notifications";
 import {deserializeStations} from "../../utils/serialization";
-import {decode} from "@msgpack/msgpack";
-import * as b64 from "base64-js";
 import { navigate } from '../../NavigationContainer';
 
 export function fetchGamesList(): ThunkAction<Promise<void>, {}, {}, AnyAction> {
@@ -169,7 +166,10 @@ export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootSt
         dispatch({type: UPDATE_STATIONS_ERROR, payload: {Id: gameId, error: undefined}});
         try {
             console.debug("fetchStations called!");
-            const serializedStations = await fetchMsgPackWithAccessToken(game.Server.Url + constants.GAME_ENDPOINTS.STATIONS);
+            const serializedStations = await promiseWithTimeout(
+                fetchMsgPackWithAccessToken(game.Server.Url + constants.GAME_ENDPOINTS.STATIONS),
+                30000
+            );
             const stations = deserializeStations(serializedStations);
             console.debug("deserialized");
             console.debug(stations.length);
