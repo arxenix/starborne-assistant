@@ -10,7 +10,7 @@ import {
     UPDATE_STATIONS, UPDATE_STATIONS_ERROR
 } from "./actions";
 import {
-    fetchJsonWithAccessToken,
+    fetchJsonWithAccessToken, fetchMsgPackWithAccessToken,
     fetchWithAccessToken,
     promiseWithTimeout
 } from "../../utils/api";
@@ -168,53 +168,11 @@ export function fetchStations(gameId: number): ThunkAction<Promise<void>, RootSt
         const game: Game = getState().gamesList.Games[gameId.toString()];
         dispatch({type: UPDATE_STATIONS_ERROR, payload: {Id: gameId, error: undefined}});
         try {
-            console.log("fetchStations called!");
-            /*const r = await fetchMsgPackWithAccessToken(
-                game.Server.Url + constants.GAME_ENDPOINTS.STATIONS, {
-                    method: "POST"
-                });
-             */
-            const blob = await promiseWithTimeout(fetchWithAccessToken(game.Server.Url + constants.GAME_ENDPOINTS.STATIONS, {
-                headers: {
-                    "Content-Type": "application/x-msgpack"
-                }
-            }).then(r => {
-                console.log("fetch done! blobbing...");
-                console.log(r);
-                return r.blob();
-            }), 20000);
-            console.log("got blob");
-            const dataURI = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    console.log("finished reading data! wow");
-                    resolve(reader.result as string);
-                }
-                reader.onerror = () => {
-                    reject(new Error("Failed to read blob"));
-                }
-                reader.onprogress = (e) => {
-                    console.log(e.loaded)
-                }
-                console.log("Starting blob read");
-                reader.readAsDataURL(blob);
-            }) as string;
-            const prefix = "data:application/octet-stream;base64,";
-            console.log(dataURI.length);
-            console.log(dataURI.slice(0, 100));
-            const base64 = dataURI.slice(prefix.length, dataURI.length);
-            console.log(base64.length);
-            const byteArray = b64.toByteArray(base64);
-            console.log(byteArray.length);
-            const r = decode(byteArray.buffer) as any;
-            console.log("decoded!");
-
-            if (r.HasErrors) {
-                throw new Error(r.Error);
-            }
-            const stations = deserializeStations(r.Content);
-            console.log("deserialized");
-            console.log(stations.length);
+            console.debug("fetchStations called!");
+            const serializedStations = await fetchMsgPackWithAccessToken(game.Server.Url + constants.GAME_ENDPOINTS.STATIONS);
+            const stations = deserializeStations(serializedStations);
+            console.debug("deserialized");
+            console.debug(stations.length);
             dispatch({type: UPDATE_STATIONS, payload: {Id: game.Id, Stations: stations}});
         }
         catch(err) {

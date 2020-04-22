@@ -4,6 +4,7 @@ import constants from "../config/constants";
 import {encodeFormData} from "./utils";
 import {REFRESH_TOKEN} from "../redux/actions/actions";
 import {decode} from "@msgpack/msgpack";
+import * as b64 from "base64-js";
 
 export function getAccessToken(): Promise<string> {
     const auth = store.getState().auth;
@@ -113,27 +114,42 @@ function xmlHttpFetch(url: string, options?: RequestInit) {
     });
 }
 
-
-function base64ToArrayBuffer(base64: string) {
-    const bin = window.atob(base64);
-    const len = bin.length;
-    const bytes = new Uint8Array(len);
-    for (let i=0; i<len; i++) {
-        bytes[i] = bin.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
-
 export async function fetchMsgPackWithAccessToken(url: RequestInfo, options?: RequestInit): Promise<any> {
-    // TODO - arrayBuffer() not supported by react-native :/
-    /*
-    options = withHeader(options, "Content-Type", "application/x-msgpack");
-    //TODO make sure r.headers.get("Content-Type") is application/x-msgpack
-    return fetchWithAccessToken(url, options)
-        .then(r => r.arrayBuffer())
-        .then(r => decode(r));
-     */
-    return xmlHttpFetch(url as string, options);
+    const blob = await fetchWithAccessToken(url, {
+        headers: {
+            "Content-Type": "application/x-msgpack"
+        }
+    }).then(r => {
+        console.log("fetch done! blobbing...");
+        console.log(r);
+        return r.blob();
+    });
+    console.debug("got blob");
+    const dataURI = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            console.debug("finished reading blob data");
+            resolve(reader.result as string);
+        }
+        reader.onerror = () => {
+            reject(new Error("Failed to read blob"));
+        }
+        console.debug("Starting blob read");
+        reader.readAsDataURL(blob);
+    }) as string;
+
+    const prefix = "data:application/octet-stream;base64,";
+    console.debug(dataURI.length);
+    const base64 = dataURI.slice(prefix.length, dataURI.length);
+    console.debug(base64.length);
+    const byteArray = b64.toByteArray(base64);
+    console.debug(byteArray.length);
+    const r = decode(byteArray.buffer) as any;
+    console.log("decoded msgpack");
+    if (r.HasErrors) {
+        throw new Error(r.Error);
+    }
+    return r.Content;
 }
 
 export function promiseWithTimeout<T>(promise: Promise<T>, timeoutMs: number, failureMessage?: string) {
