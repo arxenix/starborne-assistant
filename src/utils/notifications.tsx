@@ -1,6 +1,8 @@
 import {PersistentNotification, PersistentNotificationCategory} from "../models/notifications";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
 import {Colors} from "react-native-paper";
+import {datesInRange} from "./utils";
+import {HexIndex} from "../models/models";
 
 
 export function sortNotificationsByMostRecent(notifications: PersistentNotification[]) {
@@ -22,6 +24,45 @@ export function separateSolarFlareNotifications(notifications: PersistentNotific
         }
     }
     return [newNotifications, solarFlareNotifications];
+}
+
+export function batchSolarFlareNotifications(notifications: PersistentNotification[]) {
+    const newNotifications: PersistentNotification[] = [];
+    let solarFlareNotifications: PersistentNotification[] = [];
+
+    const batch = () => {
+        newNotifications.push({
+            $type: PersistentNotificationType.SolarFlaresDiscoveredNotification,
+            dateCreated: solarFlareNotifications[0].dateCreated,
+            empireId: solarFlareNotifications[0].empireId,
+            category: solarFlareNotifications[0].category,
+            id: solarFlareNotifications[0].id,
+            coordinates: solarFlareNotifications.map(n => ({
+                Q: n.position.q,
+                R: n.position.r
+            })) as HexIndex[]
+        })
+        solarFlareNotifications = [];
+    }
+
+    for (const notif of notifications) {
+        if (notif.$type === PersistentNotificationType.SolarFlareDiscoveredNotification) {
+            if (solarFlareNotifications.length > 0) {
+                if (!datesInRange(new Date(solarFlareNotifications[0].dateCreated), new Date(notif.dateCreated), 1000*60)) {
+                    batch();
+                }
+            }
+            solarFlareNotifications.push(notif);
+        }
+        else {
+            if (solarFlareNotifications.length > 0)
+                batch();
+            newNotifications.push(notif);
+        }
+    }
+    if (solarFlareNotifications.length > 0)
+        batch();
+    return newNotifications;
 }
 
 export function cleanNotificationCategory(category: PersistentNotificationCategory) {
@@ -82,6 +123,7 @@ export function notifIconColor(notif: PersistentNotification): [string, string?]
     // special overrides
     switch (notif.$type) {
         case PersistentNotificationType.SolarFlareDiscoveredNotification:
+        case PersistentNotificationType.SolarFlaresDiscoveredNotification:
         case PersistentNotificationType.SolarFlareExpiredNotification:
         case PersistentNotificationType.SolarFlareFinishedBySomeoneNotification:
             icon = "star";

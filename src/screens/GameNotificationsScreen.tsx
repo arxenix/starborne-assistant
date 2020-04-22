@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ActivityIndicator, Avatar, Button, Card, Text, Theme, withTheme, List, Colors} from 'react-native-paper';
+import {ActivityIndicator, Button, Theme, withTheme} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet, View} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
@@ -8,13 +8,11 @@ import {Header} from "../components/Header";
 import {fetchNotifications, markNotificationsAsRead} from "../redux/actions/GamesListActions";
 import {Notification} from "../components/Notification";
 import {
-    cleanNotificationType,
-    separateSolarFlareNotifications,
+    batchSolarFlareNotifications,
     sortNotificationsByMostRecent
 } from "../utils/notifications";
 import {ErrorComponent} from "../components/ErrorComponent";
 import {PersistentNotification} from "../models/notifications";
-import moment from "moment";
 
 interface Props {
     route: any;
@@ -60,11 +58,10 @@ class GameNotificationsScreen extends React.Component<Props, State> {
     };
 
     render() {
-        let solarFlareNotifications: PersistentNotification[] = [];
-        let otherNotifications: PersistentNotification[] = [];
+        let notifications: PersistentNotification[] = [];
         if (this.props.game.Notifications !== undefined) {
-            sortNotificationsByMostRecent(this.props.game.Notifications);
-            [otherNotifications, solarFlareNotifications] = separateSolarFlareNotifications(this.props.game.Notifications);
+            notifications = batchSolarFlareNotifications(this.props.game.Notifications);
+            sortNotificationsByMostRecent(notifications);
         }
         return (
             <View style={styles.container}>
@@ -88,23 +85,9 @@ class GameNotificationsScreen extends React.Component<Props, State> {
                         Dismiss All ({this.props.game.Notifications.length})
                     </Button>}
 
-
-                    <List.Accordion
-                        title={`Solar Flare Notifications (${solarFlareNotifications.length})`}
-                        left={props => <List.Icon {...props} icon="star"/>}
-                    >
-                        {solarFlareNotifications?.map(notif =>
-                            <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
-                        )}
-                    </List.Accordion>
-                    <List.Accordion
-                        title={`Other Notifications (${otherNotifications.length})`}
-                        left={props => <List.Icon {...props} icon="alert-circle"/>}
-                    >
-                        {otherNotifications?.map(notif =>
-                            <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
-                        )}
-                    </List.Accordion>
+                    {notifications.map(notif =>
+                        <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
+                    )}
                 </ScrollView>
             </View>
         );

@@ -1,6 +1,8 @@
-import {DynamicResource, ResourceHandler, Station} from "../models/Station";
+import {DynamicResource, ResourceHandler} from "../models/Station";
 
-const toUTC = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+export const toUTC = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+
+export const datesInRange = (d1: Date, d2: Date, millis: number) => Math.abs(toUTC(d1) - toUTC(d2)) <= millis;
 
 export function encodeFormData(data: {[key: string]: string}) {
     return Object.keys(data)

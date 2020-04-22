@@ -67,5 +67,8 @@ export enum PersistentNotificationType {
     CachePersistentNotification = "Starborne.ClientObjects.Notifications.CachePersistentNotification, Starborne.Server", 
     RewardDepositedNotification = "Starborne.ClientObjects.Notifications.RewardDepositedNotification, Starborne.Server", 
     EmpireCapturedGtNotification = "Starborne.ClientObjects.Notifications.EmpireCapturedGtNotification, Starborne.Server", 
-    EmpireLosesGtNotification = "Starborne.ClientObjects.Notifications.EmpireLosesGtNotification, Starborne.Server", 
+    EmpireLosesGtNotification = "Starborne.ClientObjects.Notifications.EmpireLosesGtNotification, Starborne.Server",
+
+    // custom
+    SolarFlaresDiscoveredNotification = "Starborne.ClientObjects.Notifications.SolarFlaresDiscoveredNotification, Starborne.Server",
 }

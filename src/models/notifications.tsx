@@ -10,6 +10,7 @@ export interface PersistentNotification {
     id: number; //unique id
     empireId: number;
     dateCreated: string;
+    [attr: string]: any;
 }
 
 export enum PersistentNotificationCategory
