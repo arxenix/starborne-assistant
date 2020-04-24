@@ -24,7 +24,8 @@ interface ResourceComponentProps {
 const ResourceComponent = (props: ResourceComponentProps) => {
     return (
         <View style={{flex: 1, flexDirection: "row"}}>
-            <Image style={{flex: 1, width: undefined, height: undefined, margin: 5, resizeMode: "contain"}} source={props.image}/>
+            <Image style={{width: 30, height: 30, margin: 5}} source={props.image}/>
+            {/*<Image style={{flex: 1, width: undefined, height: undefined, margin: 5, resizeMode: "contain"}} source={props.image}/>*/}
             <View>
                 <Text>{props.children[0]}</Text>
                 <Caption>{props.children[1]}</Caption>
@@ -61,7 +62,7 @@ export class StationComponent extends React.Component<Props, State> {
                     left={(props: any) => <Avatar.Icon {...props} icon={`numeric-${this.props.station.Level + 1}-circle`}/>}/>
                 <Card.Content>
                     <Title>Resources</Title>
-                    <View style={{flexDirection: "row"}}>
+                    <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
                         <ResourceComponent image={metalIcon}>
                             <>{formatResourceAmount(resources.Metals)}</>
                             <>{formatResourceAmount(production.Metals)}/h</>
