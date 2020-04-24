@@ -63,6 +63,8 @@ class NotificationsScreen extends React.Component<Props, State> {
             notifications = batchSolarFlareNotifications(this.props.game.Notifications);
             sortNotificationsByMostRecent(notifications);
         }
+        const myStations = this.props.game.Stations?.filter(s => s.EmpireId === this.props.game.GameInfo!.myEmpireId);
+
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} title="Notifications"/>
@@ -86,7 +88,7 @@ class NotificationsScreen extends React.Component<Props, State> {
                     </Button>}
 
                     {notifications.map(notif =>
-                        <Notification key={notif.id} notification={notif} onDismiss={this.handleDismissNotification}/>
+                        <Notification key={notif.id} notification={notif} myStations={myStations} onDismiss={this.handleDismissNotification}/>
                     )}
                 </ScrollView>
             </View>

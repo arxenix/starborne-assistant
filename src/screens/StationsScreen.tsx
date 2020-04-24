@@ -27,10 +27,6 @@ class StationsScreen extends React.Component<Props, State> {
         refreshing: false,
     };
 
-    async componentDidMount() {
-        await this.props.fetchStations(this.props.game.Id);
-    }
-
     handleRefresh = async () => {
         this.setState({refreshing: true});
         await this.props.fetchStations(this.props.game.Id);
@@ -45,11 +41,11 @@ class StationsScreen extends React.Component<Props, State> {
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} title="Stations"/>
-                {(this.props.game.Stations===undefined) &&
-                <ActivityIndicator animating/>}
-
-                {(this.props.game.Stations===undefined) &&
+                {(this.props.game.Stations===undefined) && (!this.props.game.StationsError) &&
+                <>
+                <ActivityIndicator animating/>
                 <Text>Stations can take up to 30 seconds to load...</Text>}
+                </>}
 
                 <ScrollView
                     refreshControl={

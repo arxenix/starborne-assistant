@@ -3,7 +3,7 @@ import {Theme, withTheme} from 'react-native-paper';
 import {Dimensions} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
-import {joinEstablishAndEnterGame} from "../redux/actions/GamesListActions";
+import {fetchStations, joinEstablishAndEnterGame} from "../redux/actions/GamesListActions";
 import {createDrawerNavigator, DrawerContentComponentProps} from '@react-navigation/drawer';
 import GameDrawerContent from "../components/GameDrawerContent";
 import GameDetailsScreen from "./GameDetailsScreen";
@@ -18,6 +18,7 @@ interface Props {
     theme: Theme;
     game: Game;
     joinEstablishAndEnterGame(gameId: number): Promise<void>;
+    fetchStations(gameId: number): Promise<void>;
 }
 
 interface State {
@@ -28,6 +29,8 @@ class GameNavigator extends React.Component<Props, State> {
 
     async componentDidMount() {
         await this.props.joinEstablishAndEnterGame(this.props.game.Id);
+        // noinspection ES6MissingAwait
+        this.props.fetchStations(this.props.game.Id);
     }
 
     shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>, nextContext: any): boolean {
@@ -55,4 +58,4 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {game: state.gamesList.Games[gameId.toString()]};
 };
 
-export default withTheme(connect(mapStateToProps, {joinEstablishAndEnterGame})(GameNavigator));
+export default withTheme(connect(mapStateToProps, {fetchStations, joinEstablishAndEnterGame})(GameNavigator));

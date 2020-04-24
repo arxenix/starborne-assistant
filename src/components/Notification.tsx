@@ -5,29 +5,54 @@ import moment from "moment";
 import {cleanNotificationType, notifAttrs, notifIconColor} from "../utils/notifications";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
 import {HexIndex} from "../models/models";
+import {Station} from "../models/Station";
+import {hexDistance} from "../utils/hex";
 
 interface Props {
     notification: PersistentNotification;
+    myStations?: Station[];
     onDismiss(notificationIds: number[]): Promise<void>;
 }
 
 
+interface NotifDataProps {
+    notification: PersistentNotification;
+    myStations?: Station[];
+}
 
-const NotifData = ({notification}: {notification: PersistentNotification}) => {
-    if (notification.$type === PersistentNotificationType.SolarFlaresDiscoveredNotification) {
+const NotifData = (props: NotifDataProps) => {
+    if (props.notification.$type === PersistentNotificationType.SolarFlaresDiscoveredNotification) {
+        if (props.myStations) {
+            props.notification.coordinates.sort((n1: HexIndex, n2: HexIndex) => {
+                const d1 = Math.min(...props.myStations!.map(s => hexDistance(s.Position, n1)));
+                const d2 = Math.min(...props.myStations!.map(s => hexDistance(s.Position, n2)));
+                return d1 - d2;
+            });
+        }
+
         return (
             <DataTable>
-                {notification.coordinates.map((hex: HexIndex, idx: number) => (
+                <DataTable.Header>
+                    <DataTable.Title>Position</DataTable.Title>
+                    <DataTable.Title>Distance to Nearest Station</DataTable.Title>
+                </DataTable.Header>
+
+                {props.notification.coordinates.map((hex: HexIndex, idx: number) => (
                 <DataTable.Row key={idx}>
-                    <DataTable.Cell>position</DataTable.Cell>
                     <DataTable.Cell>[{hex.Q}, {hex.R}]</DataTable.Cell>
+                    <DataTable.Cell>
+                        {(props.myStations)
+                        ? Math.min(...props.myStations.map(s => hexDistance(s.Position, hex)))
+                        : "unknown (stations not loaded)"
+                        }
+                    </DataTable.Cell>
                 </DataTable.Row>
                 ))}
             </DataTable>
         )
     }
     else {
-        const attrs = notifAttrs(notification);
+        const attrs = notifAttrs(props.notification);
         return (
             <DataTable>
                 {attrs.map((kvPair, idx) =>
@@ -66,7 +91,7 @@ export class Notification extends React.Component<Props, State> {
                     subtitle={`${date.toLocaleString()} (~${moment(date).fromNow()})`}
                     left={(props: any) => <Avatar.Icon {...props} icon={icon} color={color}/>}/>
                 <Card.Content>
-                    <NotifData notification={this.props.notification}/>
+                    <NotifData notification={this.props.notification} myStations={this.props.myStations}/>
                 </Card.Content>
                 <Card.Actions>
                     <Button
