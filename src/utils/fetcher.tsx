@@ -13,10 +13,10 @@ import {
     sortNotificationsByMostRecent
 } from "./notifications";
 import {Notifications} from "expo";
-import {UPDATE_LAST_FETCH_DATE} from "../redux/actions/actions";
 import {Colors} from "react-native-paper";
 import {GameSettings} from "../redux/reducers/GamesListReducer";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
+import {Actions} from "../redux/actions/actions";
 
 const FETCH_TASK = "StarborneFetcher";
 
@@ -89,7 +89,7 @@ export default async function setupBackgroundTask() {
                                 }
                             }
                         }
-                        store.dispatch({type: UPDATE_LAST_FETCH_DATE});
+                        store.dispatch({type: Actions.UPDATE_LAST_FETCH_DATE});
                     }
                 }
             } else {
