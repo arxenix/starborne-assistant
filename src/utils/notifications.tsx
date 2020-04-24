@@ -6,24 +6,9 @@ import {HexIndex} from "../models/models";
 
 
 export function sortNotificationsByMostRecent(notifications: PersistentNotification[]) {
-    notifications.sort((a, b) =>
-    {
+    notifications.sort((a, b) => {
         return new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime();
     })
-}
-
-export function separateSolarFlareNotifications(notifications: PersistentNotification[]) {
-    const newNotifications = [];
-    const solarFlareNotifications = [];
-    for (const notification of notifications) {
-        if (notification.$type === PersistentNotificationType.SolarFlareDiscoveredNotification) {
-            solarFlareNotifications.push(notification);
-        }
-        else {
-            newNotifications.push(notification);
-        }
-    }
-    return [newNotifications, solarFlareNotifications];
 }
 
 export function batchSolarFlareNotifications(notifications: PersistentNotification[]) {
@@ -140,13 +125,14 @@ export function notifIconColor(notif: PersistentNotification): [string, string?]
 
 export function notifAttrs(notification: PersistentNotification): [string, string][] {
     const attrs: [string, string][] = [];
-    const blackList = ["$type", "id", "empireId", "dateCreated"];
+    const blackList = ["$type", "id", "empireId", "dateCreated", "category"];
     for(const [key, valUnk] of Object.entries(notification as any)) {
         const val = valUnk as any;
-        if (key==="category") {
+        /*if (key==="category") {
             attrs.push([key, cleanNotificationCategory(notification.category)]);
         }
-        else if (val.hasOwnProperty("$type")){
+        else */
+        if (val.hasOwnProperty("$type")){
             if (val["$type"] === "HexIndex") {
                 attrs.push([key, `[${val.q}, ${val.r}]`]);
             }
