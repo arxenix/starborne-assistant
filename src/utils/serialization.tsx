@@ -1,5 +1,6 @@
 import {DynamicResource, ResourceHandler, Station} from "../models/Station";
 import {HexIndex} from "../models/models";
+import {Alliance, AllianceApplication, AllianceMember, AllianceRelationType, AllianceRole} from "../models/Alliance";
 
 function deserializeDatetime(data: any): Date {
     const mask = 0x4000000000000060;
@@ -68,14 +69,43 @@ function deserializeStation(data: any): Station {
 }
 
 export function deserializeStations(data: any[]): Station[] {
-    console.log(data.length);
-    /*
-    const stations: Station[] = [];
-    for (let i=0; i<100;i++) {
-        stations.push(deserializeStation(data[i]));
-    }
-    return stations;
-    */
+    console.debug(data.length);
     return data.map(d => deserializeStation(d))
 }
 
+export function deserializeAllianceMember(data: any): AllianceMember {
+    return {
+        tj: data[0],
+        eid: data[1],
+        rid: data[2]
+    }
+}
+
+export function deserializeAlliance(data: any): Alliance {
+    return {
+        Id: data[0],
+        DateCreated: data[1],
+        Name: data[2],
+        Tag: data[3],
+        LongDescription: data[4],
+        CoalitionId: data[5],
+        IsOpen: data[6],
+        DefaultRoleId: data[7],
+        EmpireId: data[8],
+        FlaggedHexes: data[9].map((d: any) => deserializeHexIndex(d)),
+        HasAppliedOverride: data[10],
+        LeaderRoleId: data[11],
+        Members: data[12].map((d: any) => deserializeAllianceMember(d)),
+        MessageOfTheDay: data[13],
+        Relations: {},
+        Roles: {},
+        SectorId: data[16],
+        Applications: {},
+        AllianceColors: {},
+    }
+}
+
+export function deserializeAlliances(data: any[]): Alliance[] {
+    console.debug(data.length);
+    return data.map(d => deserializeAlliance(d));
+}
