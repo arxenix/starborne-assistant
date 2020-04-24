@@ -1,8 +1,12 @@
 import * as React from "react";
-import {Avatar, Card, DataTable, Chip, Title} from "react-native-paper";
+import {Avatar, Card, DataTable, Chip, Title, Text, Caption} from "react-native-paper";
 import {DynamicResource, Station} from "../models/Station";
-import {View} from "react-native";
-import {extrapolateResources} from "../utils/utils";
+import {Image, ImageSourcePropType, View} from "react-native";
+import {extrapolateResources, formatResourceAmount} from "../utils/utils";
+import gasIcon from "../../assets/starborne/icons/Colored_Icons_Resources_Gas_01.png";
+import metalIcon from "../../assets/starborne/icons/Colored_Icons_Resources_Metal_01.png";
+import crystalIcon from "../../assets/starborne/icons/Colored_Icons_Resources_Crystal_01.png";
+import laborIcon from "../../assets/starborne/icons/Colored_Icons_Resources_Manpower_01.png";
 
 interface Props {
     station: Station;
@@ -10,6 +14,23 @@ interface Props {
 
 interface State {
     resources: DynamicResource;
+}
+
+interface ResourceComponentProps {
+    image: ImageSourcePropType;
+    children: JSX.Element[];
+}
+
+const ResourceComponent = (props: ResourceComponentProps) => {
+    return (
+        <View style={{flex: 1, flexDirection: "row"}}>
+            <Image style={{flex: 1, width: undefined, height: undefined, margin: 5, resizeMode: "contain"}} source={props.image}/>
+            <View style={{flexDirection: "column"}}>
+                <Text>{props.children[0]}</Text>
+                <Caption>{props.children[1]}</Caption>
+            </View>
+        </View>
+    );
 }
 
 export class StationComponent extends React.Component<Props, State> {
@@ -41,16 +62,22 @@ export class StationComponent extends React.Component<Props, State> {
                 <Card.Content>
                     <Title>Resources</Title>
                     <View style={{flexDirection: "row"}}>
-                        <Chip icon="square">{resources.Metals.toFixed(3)}</Chip>
-                        <Chip icon="cloud">{resources.Gases.toFixed(3)}</Chip>
-                        <Chip icon="diamond-stone">{resources.Crystals.toFixed(3)}</Chip>
-                        <Chip icon="account-group">{resources.Deuterium.toFixed(3)}</Chip>
-                    </View>
-                    <Title>Production</Title>
-                    <View style={{flexDirection: "row"}}>
-                        <Chip icon="square">{production.Metals.toFixed(3)}/hr</Chip>
-                        <Chip icon="cloud">{production.Gases.toFixed(3)}/hr</Chip>
-                        <Chip icon="diamond-stone">{production.Crystals.toFixed(3)}/hr</Chip>
+                        <ResourceComponent image={metalIcon}>
+                            <>{formatResourceAmount(resources.Metals)}</>
+                            <>{formatResourceAmount(production.Metals)}/h</>
+                        </ResourceComponent>
+                        <ResourceComponent image={gasIcon}>
+                            <>{formatResourceAmount(resources.Gases)}</>
+                            <>{formatResourceAmount(production.Gases)}/h</>
+                        </ResourceComponent>
+                        <ResourceComponent image={crystalIcon}>
+                            <>{formatResourceAmount(resources.Crystals)}</>
+                            <>{formatResourceAmount(production.Crystals)}/h</>
+                        </ResourceComponent>
+                        <ResourceComponent image={laborIcon}>
+                            <>{formatResourceAmount(resources.Deuterium)}</>
+                            <>{formatResourceAmount(production.Deuterium)}</>
+                        </ResourceComponent>
                     </View>
                     <DataTable>
                         <DataTable.Row>

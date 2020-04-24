@@ -18,6 +18,14 @@ export function getGameProgress(startDate: Date, endDate: Date): [number, number
     return [daysIn, totalDays]
 }
 
+export function formatResourceAmount(x: number): string {
+    const rounded = Math.round(x);
+    if (rounded >= 10000)
+        return `${(rounded/1000).toFixed(1)}k`;
+    else
+        return rounded.toString();
+}
+
 export function extrapolateResources(resourceHandler: ResourceHandler): DynamicResource {
     const {
         r: lastResources,
