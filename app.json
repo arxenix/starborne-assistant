@@ -27,7 +27,8 @@
     },
     "android": {
       "package": "dev.arxenix.starborneassistant",
-      "versionCode": 2
+      "versionCode": 2,
+      "permissions": []
     }
   }
 }
