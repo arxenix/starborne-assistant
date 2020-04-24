@@ -25,7 +25,7 @@ const ResourceComponent = (props: ResourceComponentProps) => {
     return (
         <View style={{flex: 1, flexDirection: "row"}}>
             <Image style={{flex: 1, width: undefined, height: undefined, margin: 5, resizeMode: "contain"}} source={props.image}/>
-            <View style={{flexDirection: "column"}}>
+            <View>
                 <Text>{props.children[0]}</Text>
                 <Caption>{props.children[1]}</Caption>
             </View>
@@ -101,7 +101,7 @@ export class StationComponent extends React.Component<Props, State> {
                             <DataTable.Cell>{this.props.station.ClaimStrength}</DataTable.Cell>
                         </DataTable.Row>
                         <DataTable.Row>
-                            <DataTable.Cell>Resource capacity</DataTable.Cell>
+                            <DataTable.Cell>Resource Capacity</DataTable.Cell>
                             <DataTable.Cell>{this.props.station.ResourceHandler.c}</DataTable.Cell>
                         </DataTable.Row>
                     </DataTable>
