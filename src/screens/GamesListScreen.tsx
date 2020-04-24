@@ -42,7 +42,7 @@ class GamesListScreen extends React.Component<Props, State> {
 
     handleGamePress = async (game: Game) => {
         console.log(`Pressed game button! ${game.Name}`);
-        this.props.navigation.navigate('GameScreen', {
+        this.props.navigation.navigate('GameNavigator', {
             gameId: game.Id
         });
     };

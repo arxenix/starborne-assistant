@@ -22,7 +22,7 @@ interface State {
     refreshing: boolean;
 }
 
-class GameStationsScreen extends React.Component<Props, State> {
+class StationsScreen extends React.Component<Props, State> {
     readonly state: State = {
         refreshing: false,
     };
@@ -78,4 +78,4 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {game: state.gamesList.Games[gameId.toString()]};
 };
 
-export default withTheme(connect(mapStateToProps, {fetchStations})(GameStationsScreen));
+export default withTheme(connect(mapStateToProps, {fetchStations})(StationsScreen));

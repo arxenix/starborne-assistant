@@ -1,29 +1,17 @@
 import * as React from "react";
-import {ActivityIndicator, Theme, withTheme} from 'react-native-paper';
+import {Theme, withTheme} from 'react-native-paper';
 import {Dimensions} from "react-native";
 import {Game} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
 import {joinEstablishAndEnterGame} from "../redux/actions/GamesListActions";
-import {HubConnection} from "@microsoft/signalr";
 import {createDrawerNavigator, DrawerContentComponentProps} from '@react-navigation/drawer';
 import GameDrawerContent from "../components/GameDrawerContent";
 import GameDetailsScreen from "./GameDetailsScreen";
-import {SafeAreaView} from "react-native-safe-area-context";
-import GameNotificationsScreen from "./GameNotificationsScreen";
-import GameStationsScreen from "./GameStationsScreen";
+import GameNotificationsScreen from "./NotificationsScreen";
+import GameStationsScreen from "./StationsScreen";
 import NotificationSettingsScreen from "./NotificationSettingsScreen";
 
 const Drawer = createDrawerNavigator();
-
-
-/*
-subviews:
-- stations
-- chat
-- alliance
-- notifications
--
- */
 
 interface Props {
     route: any;
@@ -36,7 +24,7 @@ interface State {
     refreshing: boolean;
 }
 
-class GameScreen extends React.Component<Props, State> {
+class GameNavigator extends React.Component<Props, State> {
 
     async componentDidMount() {
         await this.props.joinEstablishAndEnterGame(this.props.game.Id);
@@ -67,4 +55,4 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {game: state.gamesList.Games[gameId.toString()]};
 };
 
-export default withTheme(connect(mapStateToProps, {joinEstablishAndEnterGame})(GameScreen));
+export default withTheme(connect(mapStateToProps, {joinEstablishAndEnterGame})(GameNavigator));

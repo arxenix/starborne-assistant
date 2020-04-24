@@ -6,7 +6,7 @@ import {store, persistor} from "./src/redux/store"
 import {PersistGate} from "redux-persist/integration/react";
 import { createStackNavigator } from '@react-navigation/stack';
 import GamesListScreen from "./src/screens/GamesListScreen";
-import GameScreen from "./src/screens/GameScreen";
+import GameNavigator from "./src/screens/GameNavigator";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import setupBackgroundTask from "./src/utils/fetcher";
 import NavigationContainer from "./src/NavigationContainer";
@@ -36,9 +36,9 @@ export default function Main() {
                                   component={GamesListScreen}
                               />
                               <Stack.Screen
-                                  name="GameScreen"
+                                  name="GameNavigator"
                                   options={{title: "Game Details"}}
-                                  component={GameScreen}
+                                  component={GameNavigator}
                               />
                           </Stack.Navigator>
                       </NavigationContainer>

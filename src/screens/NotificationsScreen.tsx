@@ -28,7 +28,7 @@ interface State {
     dismissingAll: boolean;
 }
 
-class GameNotificationsScreen extends React.Component<Props, State> {
+class NotificationsScreen extends React.Component<Props, State> {
     readonly state: State = {
         refreshing: false,
         dismissingAll: false,
@@ -106,4 +106,4 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {game: state.gamesList.Games[gameId.toString()]};
 };
 
-export default withTheme(connect(mapStateToProps, {fetchNotifications, markNotificationsAsRead})(GameNotificationsScreen));
+export default withTheme(connect(mapStateToProps, {fetchNotifications, markNotificationsAsRead})(NotificationsScreen));
