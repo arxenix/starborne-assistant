@@ -1,16 +1,9 @@
-import {
-    CONNECTION_ERROR,
-    ENTER_GAME,
-    ESTABLISH_GAME_SERVER_CONNECTION,
-    JOIN_GAME_SERVER, SET_NOTIFICATION_TYPE_ENABLED, SET_NOTIFICATIONS_ENABLED,
-    UPDATE_GAMES_LIST, UPDATE_GAMES_LIST_FAILURE, UPDATE_LAST_FETCH_DATE,
-    UPDATE_NOTIFICATIONS, UPDATE_NOTIFICATIONS_ERROR, UPDATE_STATIONS, UPDATE_STATIONS_ERROR
-} from "../actions/actions";
 import {GameInfo, ServerStatus} from "../../models/models";
 import {HubConnection} from "@microsoft/signalr";
 import {PersistentNotification} from "../../models/notifications";
 import {AnyAction} from "redux";
 import {Station} from "../../models/Station";
+import {Actions} from "../actions/actions";
 
 export interface State {
     Games: {[Id: string]: Game};
@@ -66,7 +59,7 @@ const INITIAL_STATE = {
 
 export default (state: State = INITIAL_STATE, action: AnyAction) => {
     switch (action.type) {
-        case UPDATE_GAMES_LIST:
+        case Actions.UPDATE_GAMES_LIST:
             let newGamesSettings = state.GamesSettings;
             action.payload.forEach((g: Game) => {
                 if (!state.GamesSettings.hasOwnProperty(g.Id)) {
@@ -86,12 +79,12 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
 
                 GamesSettings: newGamesSettings
             };
-        case UPDATE_GAMES_LIST_FAILURE:
+        case Actions.UPDATE_GAMES_LIST_FAILURE:
             return {
                 ...state,
                 GamesError: action.payload.error,
             };
-        case JOIN_GAME_SERVER:
+        case Actions.JOIN_GAME_SERVER:
             return {
                 ...state,
                 Games: {
@@ -102,7 +95,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case ESTABLISH_GAME_SERVER_CONNECTION:
+        case Actions.ESTABLISH_GAME_SERVER_CONNECTION:
             return {
                 ...state,
                 Games: {
@@ -113,7 +106,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case ENTER_GAME:
+        case Actions.ENTER_GAME:
             return {
                 ...state,
                 Games: {
@@ -125,7 +118,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case CONNECTION_ERROR:
+        case Actions.CONNECTION_ERROR:
             return {
                 ...state,
                 Games: {
@@ -136,7 +129,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case UPDATE_NOTIFICATIONS:
+        case Actions.UPDATE_NOTIFICATIONS:
             return {
                 ...state,
                 Games: {
@@ -147,7 +140,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case UPDATE_NOTIFICATIONS_ERROR:
+        case Actions.UPDATE_NOTIFICATIONS_ERROR:
             return {
                 ...state,
                 Games: {
@@ -158,12 +151,12 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case UPDATE_LAST_FETCH_DATE:
+        case Actions.UPDATE_LAST_FETCH_DATE:
             return {
                 ...state,
                 lastFetchedDate: new Date().toString()
             }
-        case UPDATE_STATIONS:
+        case Actions.UPDATE_STATIONS:
             return {
                 ...state,
                 Games: {
@@ -174,7 +167,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case UPDATE_STATIONS_ERROR:
+        case Actions.UPDATE_STATIONS_ERROR:
             return {
                 ...state,
                 Games: {
@@ -185,7 +178,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case SET_NOTIFICATIONS_ENABLED:
+        case Actions.SET_NOTIFICATIONS_ENABLED:
             return {
                 ...state,
                 GamesSettings: {
@@ -196,7 +189,7 @@ export default (state: State = INITIAL_STATE, action: AnyAction) => {
                     }
                 }
             };
-        case SET_NOTIFICATION_TYPE_ENABLED:
+        case Actions.SET_NOTIFICATION_TYPE_ENABLED:
             let newDisabledNotificationTypes = state.GamesSettings[action.payload.Id].disabledNotificationTypes;
             newDisabledNotificationTypes = newDisabledNotificationTypes.filter(t => t!==action.payload.type);
             if (!action.payload.enabled) {

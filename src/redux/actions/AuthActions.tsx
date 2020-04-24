@@ -1,14 +1,14 @@
 import {AnyAction} from 'redux';
 import constants from "../../config/constants";
 import {encodeFormData} from "../../utils/utils";
-import {LOGIN_FAILURE, LOGIN_START, LOGIN_SUCCESS} from "./actions";
 import {ThunkAction, ThunkDispatch} from 'redux-thunk';
+import {Actions} from "./actions";
 
 
 //TODO transform this into async/await
 export function login(user: string, password: string): ThunkAction<Promise<boolean>, {}, {}, AnyAction> {
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-        dispatch({type: LOGIN_START, payload: {}});
+        dispatch({type: Actions.LOGIN_START, payload: {}});
         try{
             const request = await fetch(constants.ENDPOINTS.AUTH, {
                 method: "POST",
@@ -29,16 +29,16 @@ export function login(user: string, password: string): ThunkAction<Promise<boole
             }
             const auth = await request.json();
             if (auth.hasOwnProperty("error")) {
-                dispatch({type: LOGIN_FAILURE, payload: "Invalid username/password"})
+                dispatch({type: Actions.LOGIN_FAILURE, payload: "Invalid username/password"})
                 return false;
             } else {
-                dispatch({type: LOGIN_SUCCESS, payload: {auth: auth, user: user, password: password}})
+                dispatch({type: Actions.LOGIN_SUCCESS, payload: {auth: auth, user: user, password: password}})
                 return true;
             }
         }
         catch(err) {
             console.error(err);
-            dispatch({type: LOGIN_FAILURE, payload: "Error while logging in - "+err})
+            dispatch({type: Actions.LOGIN_FAILURE, payload: "Error while logging in - "+err})
             return false;
         }
     }

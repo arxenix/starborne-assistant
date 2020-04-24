@@ -1,5 +1,5 @@
-import {LOGIN_FAILURE, LOGIN_START, LOGIN_SUCCESS, REFRESH_TOKEN} from '../actions/actions';
 import {AnyAction} from "redux";
+import {Actions} from "../actions/actions";
 
 export interface Auth {
     access_token: string;
@@ -33,28 +33,28 @@ const INITIAL_STATE = {
 
 export default (state: State = INITIAL_STATE, action: AnyAction) => {
     switch (action.type) {
-        case LOGIN_SUCCESS:
+        case Actions.LOGIN_SUCCESS:
             return {
                 ...state,
                 auth_status: AUTH_STATUS.SUCCESS,
                 login_error: null,
                 ...action.payload
             };
-        case REFRESH_TOKEN:
+        case Actions.REFRESH_TOKEN:
             return {
                 ...state,
                 auth_status: AUTH_STATUS.SUCCESS,
                 login_error: null,
                 ...action.payload
             };
-        case LOGIN_FAILURE:
+        case Actions.LOGIN_FAILURE:
             return {
                 ...state,
                 auth: null,
                 auth_status: AUTH_STATUS.FAILURE,
                 login_error: action.payload
             };
-        case LOGIN_START:
+        case Actions.LOGIN_START:
             return {
                 ...state,
                 auth: null,
