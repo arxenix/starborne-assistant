@@ -1,7 +1,7 @@
 import * as React from "react";
 import {ActivityIndicator, Text, Theme, withTheme} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet, View} from "react-native";
-import {Game} from "../redux/reducers/GamesListReducer";
+import {Game} from "../redux/reducers/GameReducer";
 import {connect} from "react-redux";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 import {Header} from "../components/Header";

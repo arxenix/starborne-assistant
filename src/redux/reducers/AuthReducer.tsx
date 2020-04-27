@@ -1,5 +1,21 @@
 import {AnyAction} from "redux";
 import {Actions} from "../actions/actions";
+import {PersistConfig} from "redux-persist/es/types";
+import {storage} from "../storage";
+
+export interface State {
+    auth: Auth | null;
+    auth_status: AUTH_STATUS;
+    user: string | null;
+    password: string | null;
+    login_error: string | null;
+}
+
+export const authPersistConfig: PersistConfig<any> = {
+    key: "auth",
+    whitelist: ["user", "password"],
+    storage
+}
 
 export interface Auth {
     access_token: string;
@@ -15,13 +31,6 @@ export enum AUTH_STATUS {
     FAILURE
 }
 
-export interface State {
-    auth: Auth | null;
-    auth_status: AUTH_STATUS;
-    user: string | null;
-    password: string | null;
-    login_error: string | null;
-}
 
 const INITIAL_STATE = {
     auth: null,

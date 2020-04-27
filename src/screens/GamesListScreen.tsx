@@ -1,7 +1,8 @@
 import * as React from "react";
 import {List, ActivityIndicator, Text, Theme, withTheme, Headline} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet} from "react-native";
-import {Game, State as GamesListState} from "../redux/reducers/GamesListReducer";
+import {Game} from "../redux/reducers/GameReducer";
+import {State as GamesListState} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
 import GameCard from "../components/GameCard";
 import {fetchGamesList} from "../redux/actions/GamesListActions";

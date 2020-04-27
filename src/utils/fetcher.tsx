@@ -12,7 +12,6 @@ import {
     sortNotificationsByMostRecent
 } from "./notifications";
 import {Notifications} from "expo";
-import {GameSettings} from "../redux/reducers/GamesListReducer";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
 import {Actions} from "../redux/actions/actions";
 import {HexIndex} from "../models/models";
@@ -27,12 +26,10 @@ export default async function setupBackgroundTask() {
                 await store.dispatch(login(user!!, password!!));
                 await store.dispatch(fetchGamesList());
 
-                const GamesSettings = store.getState().gamesList.GamesSettings;
 
                 for (const game of Object.values(store.getState().gamesList.Games)) {
                     if (game.HasRequestingPlayer) {
-                        const GameSettings = GamesSettings[game.Id] as GameSettings;
-                        if (!GameSettings.notificationsEnabled)
+                        if (!game.Settings.notificationsEnabled)
                             break;
 
                         await store.dispatch(joinEstablishAndEnterGame(game.Id));
@@ -48,7 +45,7 @@ export default async function setupBackgroundTask() {
 
                             sortNotificationsByMostRecent(fixedNotifications);
                             for (const notification of fixedNotifications) {
-                                if (GameSettings.disabledNotificationTypes.includes(notification.$type))
+                                if (game.Settings.disabledNotificationTypes.includes(notification.$type))
                                     continue;
 
                                 //const notificationCategory = cleanNotificationCategory(notification.category);

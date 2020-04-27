@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Theme, withTheme} from 'react-native-paper';
 import {Dimensions} from "react-native";
-import {Game} from "../redux/reducers/GamesListReducer";
+import {Game} from "../redux/reducers/GameReducer";
 import {connect} from "react-redux";
 import {fetchStations, joinEstablishAndEnterGame} from "../redux/actions/GamesListActions";
 import {createDrawerNavigator, DrawerContentComponentProps} from '@react-navigation/drawer';

@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Subheading, Switch, Theme, Title, withTheme} from 'react-native-paper';
 import {ScrollView, StyleSheet, View} from "react-native";
-import {Game, GameSettings} from "../redux/reducers/GamesListReducer";
+import {Game, GameSettings} from "../redux/reducers/GameReducer";
 import {connect} from "react-redux";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 import {Header} from "../components/Header";
