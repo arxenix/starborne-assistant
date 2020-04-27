@@ -64,56 +64,6 @@ export function fetchJsonWithAccessToken(url: RequestInfo, options?: RequestInit
     return fetchWithAccessToken(url, options).then(r => r.json());
 }
 
-function xmlHttpFetch(url: string, options?: RequestInit) {
-    return new Promise(async (resolve, reject) => {
-        const request = new XMLHttpRequest();
-        request.onabort = () => {
-            reject(new Error("Request aborted"));
-        }
-        request.onload = () => {
-            if (request.status === 200) {
-                resolve(decode(Buffer.from(request.response)));
-            } else {
-                reject(new Error(request.statusText));
-            }
-        };
-
-        request.onprogress = (a) => {
-            console.log(a);
-        }
-
-        request.onloadstart = () => {
-            console.log("load start");
-        }
-        request.onloadend = () => {
-            console.log("load end");
-        }
-        request.onreadystatechange = (state) => {
-            console.log("ready state change");
-            console.log(request);
-        }
-        request.timeout = 10000;
-        request.ontimeout = () => reject(new Error("Request timed out"));
-        request.onerror = () => reject(new Error(request.statusText));
-        request.responseType = 'arraybuffer';
-
-        setInterval(() => {
-            console.log("READY STATE " +request.readyState)
-            console.log("STATUS " +request.status)
-        }, 1000)
-
-        request.open(options?.method ?? "GET", url);
-        for (const [k,v] of Object.entries(options?.headers ?? {})) {
-            request.setRequestHeader(k, v)
-        }
-        request.setRequestHeader('Content-Type', 'application/x-msgpack');
-        request.setRequestHeader('Authorization', `Bearer ${await getAccessToken()}`);
-        console.log("Sending xmlHttpRequest!");
-        console.log(request);
-        request.send();
-    });
-}
-
 export async function fetchMsgPackWithAccessToken(url: RequestInfo, options?: RequestInit): Promise<any> {
     const blob = await fetchWithAccessToken(url, {
         headers: {
