@@ -8,13 +8,13 @@ import {Header} from "../components/Header";
 import {PersistentNotificationType} from "../models/PersistentNotificationType";
 import {cleanNotificationType} from "../utils/notifications";
 import {setNotificationsEnabled, setNotificationTypeEnabled} from "../redux/actions/GamesListActions";
+import {RootState} from "../redux/reducers";
 
 interface Props {
     route: any;
     navigation: DrawerNavigationProp<any>;
     theme: Theme;
     game: Game;
-    gameSettings: GameSettings;
     setNotificationsEnabled(gameId: number, enabled: boolean): Promise<void>
     setNotificationTypeEnabled(gameId: number, notificationType: string, enabled: boolean): Promise<void>
 }
@@ -51,7 +51,7 @@ class NotificationSettingsScreen extends React.Component<Props, State> {
                         <Title style={{width: "80%"}}>Server Notifications Enabled</Title>
                         <Switch
                             onValueChange={(v) => this.handleToggle(v)}
-                            value={this.props.gameSettings.notificationsEnabled}
+                            value={this.props.game.Settings.notificationsEnabled}
                         />
                     </View>
 
@@ -59,9 +59,9 @@ class NotificationSettingsScreen extends React.Component<Props, State> {
                         <View style={styles.notificationToggle} key={idx}>
                             <Subheading style={{width: "80%"}}>{cleanNotificationType(t)}</Subheading>
                             <Switch
-                                disabled={!this.props.gameSettings.notificationsEnabled}
+                                disabled={!this.props.game.Settings.notificationsEnabled}
                                 onValueChange={(v) => this.handleToggleType(t, v)}
-                                value={!this.props.gameSettings.disabledNotificationTypes.includes(t)}
+                                value={!this.props.game.Settings.disabledNotificationTypes.includes(t)}
                             />
                         </View>
                     )}
@@ -84,11 +84,10 @@ const styles = StyleSheet.create({
 });
 
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: RootState, ownProps: any) => {
     const gameId = ownProps.route.params.gameId;
     return {
-        game: state.gamesList.Games[gameId.toString()],
-        gameSettings: state.gamesList.GamesSettings[gameId.toString()]
+        game: state.gamesList.Games[gameId.toString()]
     };
 };
 
