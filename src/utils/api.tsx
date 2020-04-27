@@ -2,9 +2,9 @@ import {store} from "../redux/store";
 import {AUTH_STATUS} from "../redux/reducers/AuthReducer";
 import constants from "../config/constants";
 import {encodeFormData} from "./utils";
-import {REFRESH_TOKEN} from "../redux/actions/actions";
 import {decode} from "@msgpack/msgpack";
 import * as b64 from "base64-js";
+import {Actions} from "../redux/actions/actions";
 
 export function getAccessToken(): Promise<string> {
     const auth = store.getState().auth;
@@ -30,7 +30,7 @@ export function getAccessToken(): Promise<string> {
             })
                 .then(r => r.json())
                 .then(r => {
-                    store.dispatch({type: REFRESH_TOKEN, payload: {auth: r}});
+                    store.dispatch({type: Actions.REFRESH_TOKEN, payload: {auth: r}});
                     return r.access_token;
                 });
         }
