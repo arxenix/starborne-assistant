@@ -1,11 +1,10 @@
 import * as React from "react";
 import {List, ActivityIndicator, Text, Theme, withTheme, Headline} from 'react-native-paper';
 import {RefreshControl, ScrollView, StyleSheet} from "react-native";
-import {Game, JoinInfo, State as GamesListState} from "../redux/reducers/GamesListReducer";
+import {Game, State as GamesListState} from "../redux/reducers/GamesListReducer";
 import {connect} from "react-redux";
 import GameCard from "../components/GameCard";
 import {fetchGamesList} from "../redux/actions/GamesListActions";
-import {HubConnection} from "@microsoft/signalr";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {RootState} from "../redux/reducers";
@@ -15,9 +14,6 @@ interface Props extends GamesListState {
     navigation: StackNavigationProp<any>;
     theme: Theme;
     fetchGamesList(): Promise<void>;
-    joinGameServer(gameId: number): Promise<JoinInfo>;
-    establishGameConnection(gameId: number): Promise<HubConnection>;
-    enterGame(gameId: number): Promise<void>;
 }
 
 interface State {
