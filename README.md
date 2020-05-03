@@ -21,7 +21,7 @@ The best way to contact me with questions is through the discord server for the 
 Open up a new [github issue](https://github.com/arxenix/starborne-assistant/issues/new)!
 
 # Progress
-I'll be trying to keep this [project board](https://github.com/arxenix/starborne-assistant/projects/1) updated :)
+I'll be trying to keep this [project board](https://github.com/arxenix/starborne-assistant/projects/1) updated :), or you can just ask me on discord.
 
 # Contributing
 I'd love some help developing this app, if you have any experience with react/react-native, please reach out to me on discord.
