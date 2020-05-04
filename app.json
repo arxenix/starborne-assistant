@@ -22,12 +22,12 @@
     ],
     "ios": {
       "bundleIdentifier": "dev.arxenix.starborneassistant",
-      "buildNumber": "0.0.2",
+      "buildNumber": "0.0.3",
       "supportsTablet": true
     },
     "android": {
       "package": "dev.arxenix.starborneassistant",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": []
     }
   }
