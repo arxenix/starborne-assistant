@@ -41,11 +41,9 @@ class StationsScreen extends React.Component<Props, State> {
         return (
             <View style={styles.container}>
                 <Header navigation={this.props.navigation} title="Stations"/>
+
                 {(this.props.game.Stations===undefined) && (!this.props.game.StationsError) &&
-                <>
-                <ActivityIndicator animating/>
-                <Text>Stations can take up to 30 seconds to load...</Text>}
-                </>}
+                <ActivityIndicator animating/>}
 
                 <ScrollView
                     refreshControl={
