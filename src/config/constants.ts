@@ -9,7 +9,7 @@ export default {
 	VERSION_VALUE: "0.1.1.1650",
 	ENDPOINTS: {
 		AUTH: "https://sba.starborne.com/Token",
-		LIST_GAMES: "https://sba.starborne.com/api/Player/ListGames",
+		LIST_GAMES: "https://sba.starborne.com/api/Player/GetGames",
 		JOIN_SERVER: "https://sba.starborne.com/api/Player/JoinServer"
 	},
 	GAME_ENDPOINTS: {

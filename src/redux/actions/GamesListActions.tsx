@@ -21,7 +21,7 @@ export function fetchGamesList(): ThunkAction<Promise<void>, {}, {}, AnyAction> 
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
         try {
             const r = await fetchJsonWithAccessToken(constants.ENDPOINTS.LIST_GAMES, {
-                method: "POST"
+                method: "GET"
             }) as GamesState;
             dispatch({type: Actions.UPDATE_GAMES_LIST, payload: r.Games});
         }
